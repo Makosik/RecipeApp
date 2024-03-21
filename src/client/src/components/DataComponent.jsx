@@ -8,7 +8,6 @@ const DataComponent = () => {
       const fetchData = async () => {
          const result = await axios.get('/api/dishes');
          setData(result.data);
-         console.log(result.data);
       };
 
       fetchData();
