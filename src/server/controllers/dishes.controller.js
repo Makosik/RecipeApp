@@ -13,8 +13,19 @@ class DishesController {
    }
 
    async getDishes(req, res) {
-      const dishes = await db.query("select * from dishes;")
+      const dishes = await db.query(
+         `SELECT Dishes.title AS dish_title, 
+         ARRAY_AGG(Ingredients.title) AS ingredient_titles
+         FROM Dishes
+         JOIN Dishes_Ingredients ON Dishes.id = Dishes_Ingredients.dish_id
+         JOIN Ingredients ON Ingredients.id = Dishes_Ingredients.ingredient_id
+         GROUP BY Dishes.title;`)
       res.json(dishes.rows);
+   }
+
+   async getIngredients(req,res){
+      const ingredients = await db.query(`select * from Ingredients;`)
+      res.json(ingredients.rows);
    }
 }
 

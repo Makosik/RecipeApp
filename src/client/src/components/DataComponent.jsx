@@ -2,27 +2,34 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const DataComponent = () => {
-  const [data, setData] = useState([]);
+   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios.get('/api/dishes');
-      setData(result.data);
-    };
+   useEffect(() => {
+      const fetchData = async () => {
+         const result = await axios.get('/api/dishes');
+         setData(result.data);
+         console.log(result.data);
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+   }, []);
 
-  return (
-    <div>
-      <h1>Data from PostgreSQL</h1>
-      <ul>
-        {data.map(item => (
-          <li key={item.id}>{item.title}</li> // Replace 'columnName' with actual column name
-        ))}
-      </ul>
-    </div>
-  );
+   return (
+      <div>
+         <h1>Data from PostgreSQL</h1>
+         <div>
+            {data.map(item => (
+               <p key={item.id}>{item.dish_title}
+                  <ul>
+                     {item.ingredient_titles.map(ingr => (
+                        <li>{ingr}</li>
+                     ))}
+                  </ul>
+               </p>
+            ))}
+         </div>
+      </div>
+   );
 };
 
 export default DataComponent;
