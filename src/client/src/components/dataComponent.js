@@ -6,8 +6,8 @@ const DataComponent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get('http://localhost:5000/api/dishes');
-      setData(result);
+      const result = await axios.get('/api/dishes');
+      setData(result.data);
     };
 
     fetchData();
