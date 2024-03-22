@@ -26,18 +26,27 @@ const AddDishForm = () => {
       setTitle(e.target.value);
    };
 
-   const handleIngredientInputChange = (e) => {
-      setIngredient(e.target.value);
-   };
 
    const handleIngredientAdd = () => {
-      const ingredientToAdd = availableIngredients.find(item => item.title === ingredient);
-      if (ingredientToAdd) {
-         setSelectedIngredients(prevIngredients => [...prevIngredients, ingredientToAdd]);
-      }
-};
+      // Проверяем наличие выбранного ингредиента в списке selectedIngredients
+      const isIngredientSelected = selectedIngredients.some(selectedIngredient => selectedIngredient.title === ingredient.title);
 
-//BIG ZATUP HERE
+      if (!isIngredientSelected) {
+         // Если ингредиент еще не выбран, добавляем его в список selectedIngredients
+         setSelectedIngredients(prevIngredients => [...prevIngredients, ingredient]);
+         console.log(`Ингредиент добавлен: ${ingredient.title}`);
+         console.log(`Все выбранные Ингредиенты:`);
+         selectedIngredients.forEach(ingredient => {
+            console.log(ingredient);
+         });
+      } else {
+         // Если ингредиент уже выбран, выводим сообщение об ошибке
+         console.log(`Ингредиент "${ingredient.title}" уже добавлен`);
+      }
+   };
+
+
+   //BIG ZATUP HERE
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -45,7 +54,7 @@ const AddDishForm = () => {
          // Отправка запроса на сервер для добавления блюда
          const response = await axios.post('/api/dish', { title });
          const { dish_id } = response.data; // получаем ID только что добавленного блюда
-        // console.log(response.data);
+         // console.log(response.data);
 
          // Отправка запросов на сервер для добавления ингредиентов блюда в таблицу Dishes_Ingredients
          const ingredientPromises = selectedIngredients.map(ingredient => {
@@ -76,8 +85,11 @@ const AddDishForm = () => {
                <Autocomplete
                   options={availableIngredients}
                   getOptionLabel={(option) => option.title}
-
-                  onChange={handleIngredientInputChange}
+                  value={null}
+                  onChange={(event, newValue) => {
+                     console.log(newValue);
+                     setIngredient(newValue);
+                  }}
                   renderInput={(params) => <TextField {...params} label="Ингредиент" />}
                />
             </label>
@@ -85,7 +97,7 @@ const AddDishForm = () => {
             <br />
             <ul>
                {selectedIngredients.map(ingredient => (
-                  <li key={ingredient.id}>{ingredient.name}</li>
+                  <li key={ingredient.id}>{ingredient.title}</li>
                ))}
             </ul>
             <button type="submit">Добавить блюдо</button>

@@ -26,11 +26,17 @@ drop table Ingredients CASCADE;
 
 select * from Dishes_Ingredients;
 
-SELECT Dishes.title AS dish_title, Ingredients.title AS ingredient_title
-FROM Dishes
-JOIN Dishes_Ingredients ON Dishes.id = Dishes_Ingredients.dish_id
-join ingredients ON ingredients.id = Dishes_Ingredients.ingredient_id
+-- SELECT Dishes.title AS dish_title, Ingredients.title AS ingredient_title
+-- FROM Dishes
+-- JOIN Dishes_Ingredients ON Dishes.id = Dishes_Ingredients.dish_id
+-- join ingredients ON ingredients.id = Dishes_Ingredients.ingredient_id
 
+SELECT Dishes.title AS dish_title, 
+         ARRAY_AGG(Ingredients.title) AS ingredient_titles
+         FROM Dishes
+         JOIN Dishes_Ingredients ON Dishes.id = Dishes_Ingredients.dish_id
+         JOIN Ingredients ON Ingredients.id = Dishes_Ingredients.ingredient_id
+         GROUP BY Dishes.title
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
