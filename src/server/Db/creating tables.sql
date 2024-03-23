@@ -40,5 +40,19 @@ CREATE TABLE users (
 	user_password VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    dish_title VARCHAR(255) NOT NULL,
+	ingredient_id INTEGER []
+);
+
+drop TABLE orders;
+
+SELECT* from orders;
+
+SELECT o.id AS order_id, o.dish_title, i.title AS ingredient_title
+FROM orders o
+JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
+JOIN ingredients i ON i.id = ing_id
 
 
