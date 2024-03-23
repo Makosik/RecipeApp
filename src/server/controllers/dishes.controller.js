@@ -29,10 +29,10 @@ class DishesController {
    }
 
    async createDish(req, res){
-      const { dish_id, ingredient_id } = req.body;
+      const { dish_title, ingredient_id } = req.body;
       try {
         // Добавление соответствия блюда и ингредиента в таблицу Dishes_Ingredients
-        await db.query('INSERT INTO Dishes_Ingredients (dish_id, ingredient_id) VALUES ($1, $2)', [dish_id, ingredient_id]);
+        await db.query('INSERT INTO orders (dish_title, ingredient_id) VALUES ($1, $2)', [dish_title, ingredient_id]);
         res.status(201).json({ message: 'Ингредиент успешно добавлен к блюду' });
       } catch (error) {
         console.error('Ошибка при добавлении ингредиента к блюду:', error);

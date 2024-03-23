@@ -46,28 +46,19 @@ const AddDishForm = () => {
    };
 
 
-   //BIG ZATUP HERE
 
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-         // Отправка запроса на сервер для добавления блюда
-         const response = await axios.post('/api/dish', { title });
-         const { dish_id } = response.data; // получаем ID только что добавленного блюда
-         // console.log(response.data);
-
-         // Отправка запросов на сервер для добавления ингредиентов блюда в таблицу Dishes_Ingredients
-         const ingredientPromises = selectedIngredients.map(ingredient => {
-            return axios.post('/api/dishes-ingredients', { dish_id, ingredientId: ingredient.id });
-         });
-
-         // Ждем завершения всех запросов
-         await Promise.all(ingredientPromises);
-
-         alert('Блюдо успешно добавлено!');
+         console.log(selectedIngredients.map(ingredient => ingredient.id))
+         // Сначала отправляем запрос на сервер для добавления блюда и его ингредиентов в таблицу Orders
+         await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id) });
+         alert('Блюдо успешно добавлено в заявку!');
+         setSelectedIngredients([]);
+         setTitle([]);
       } catch (error) {
          console.error('Ошибка при добавлении блюда:', error);
-         alert('Ошибка при добавлении блюда!');
+         alert('Ошибка при добавлении блюда в заявку!');
       }
    };
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import DataComponent from './components/DataComponent';
-import AddDishForm from './components/AddDishesTitle';
+import AddDishForm from './components/CreateOrder';
 
 function App() {
    return (
