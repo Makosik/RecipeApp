@@ -320,7 +320,7 @@ INSERT INTO Dishes_Ingredients (dish_id, ingredient_id) VALUES
 (10, 8), -- Чеснок
 (10, 10); -- Морковь
 
-
+insert into users (user_name,mail,user_password) values('Admin','smth@ya.ru','Admin');
 
 
 

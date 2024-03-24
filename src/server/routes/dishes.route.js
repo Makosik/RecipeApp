@@ -8,7 +8,7 @@ router.get("/dishes", dishesController.getDishes);
 router.get("/ingredients",dishesController.getIngredients);
 router.get("/orders", dishesController.getOrders);
 router.delete("/orders/:order_id", dishesController.deleteOrder);
-
+router.post("/addOrder", dishesController.addOrder);
 
 module.exports = router;
 

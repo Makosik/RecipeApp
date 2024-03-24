@@ -47,11 +47,22 @@ class DishesController {
       try {
           const { order_id } = req.params;
           const result = await db.query('DELETE FROM orders WHERE id = $1', [order_id]);
-          res.json({ success: true, message: 'Заказ успешно удален' });
+          res.json({ success: true, message: 'Заявка успешно удален' });
       } catch (error) {
-          console.error('Ошибка при удалении заказа:', error);
-          res.status(500).json({ error: 'Ошибка при удалении заказа' });
+          console.error('Ошибка при удалении заявки:', error);
+          res.status(500).json({ error: 'Ошибка при удалении заявки' });
       }
+  }
+
+  async addOrder(req,res){
+   try {
+      const { dish_title } = req.body;
+      await db.query('INSERT INTO Dishes (title) VALUES ($1)', [dish_title]);
+      res.json({ success: true, message: 'Заявка успешно одобрена' }); 
+   } catch (error) {
+      console.error('Ошибка при добавлении заявки:', error);
+      res.status(500).json({ error: 'Ошибка при добавлении заявки' });
+   }
   }
 
 }

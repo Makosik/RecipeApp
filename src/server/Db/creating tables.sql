@@ -9,10 +9,10 @@ select * from ingredients;
 
 CREATE TABLE Dishes (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) UNIQUE NOT NULL
+    title VARCHAR(255) NOT NULL
 );
 
-drop table Ingredients CASCADE;
+drop table Dishes CASCADE;
 
 select * from Dishes;
 
@@ -50,9 +50,15 @@ drop TABLE orders;
 
 SELECT* from orders;
 
-SELECT o.id AS order_id, o.dish_title, i.title AS ingredient_title
+
+SELECT
+    o.id AS order_id,
+    o.dish_title,
+    ARRAY_AGG(i.title) AS ingredients
 FROM orders o
 JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
 JOIN ingredients i ON i.id = ing_id
+GROUP BY o.id, o.dish_title
+ORDER BY o.id;
 
 

@@ -29,6 +29,18 @@ function ShowOrders() {
       }
   };
 
+  const handleAddOrder = async (dish_title,order_id) => {
+   try {
+       const response = await axios.post(`/api/addOrder`,{"dish_title":dish_title});
+       console.log('Заявка успешно добавлена:', response.data);
+       alert('Заявка успешно добавлена!');
+       await handleDeleteOrder(order_id);
+   } catch (error) {
+       console.error('Ошибка при добавлении заявки:', error)
+       alert('Заявка успешно добавлена!');
+   }
+};
+
    return (
       <div>
          <h1>Orders:</h1>
@@ -43,6 +55,7 @@ function ShowOrders() {
                      ))}
                   </ul>
                   <button type="button" onClick={() => handleDeleteOrder(order.order_id)}>Удалить заявку</button>
+                  <button type="button" onClick={() => handleAddOrder(order.dish_title,order.order_id)}>Добавить заявку</button>
                </div>
             ))}
          </div>
