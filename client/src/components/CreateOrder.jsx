@@ -30,7 +30,10 @@ const AddDishForm = () => {
    const handleIngredientAdd = () => {
       // Проверяем наличие выбранного ингредиента в списке selectedIngredients
       const isIngredientSelected = selectedIngredients.some(selectedIngredient => selectedIngredient.title === ingredient.title);
-
+      if (!ingredient) {
+         alert("Нужно написать ингредиент, который вы хотите добавить!")
+         return;
+      }
       if (!isIngredientSelected) {
          // Если ингредиент еще не выбран, добавляем его в список selectedIngredients
          setSelectedIngredients(prevIngredients => [...prevIngredients, ingredient]);
@@ -50,12 +53,15 @@ const AddDishForm = () => {
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-         console.log(selectedIngredients.map(ingredient => ingredient.id))
-         // Сначала отправляем запрос на сервер для добавления блюда и его ингредиентов в таблицу Orders
-         await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id) });
-         alert('Блюдо успешно добавлено в заявку!');
-         setSelectedIngredients([]);
-         setTitle([]);
+         if (selectedIngredients.length > 0 && title.length > 0) {
+            console.log(selectedIngredients.map(ingredient => ingredient.id));
+            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id) });
+            alert('Блюдо успешно добавлено в заявку!');
+            setSelectedIngredients([]);
+            setTitle('');
+         } else {
+            alert('Нельзя добавить блюдо без ингредиентов или без названия!');
+         }
       } catch (error) {
          console.error('Ошибка при добавлении блюда:', error);
          alert('Ошибка при добавлении блюда в заявку!');
