@@ -11,7 +11,7 @@ const DataComponent = () => {
       };
 
       fetchData();
-   }, []);
+   }, [data]);
 
    return (
       <div>

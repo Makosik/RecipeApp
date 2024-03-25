@@ -7,8 +7,8 @@ function App() {
    return (
       <>
          <AddDishForm />
-         <ShowOrders/>
-         {/* <DataComponent /> */}
+         <ShowOrders />
+         <DataComponent />
       </>
    )
 }

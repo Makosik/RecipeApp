@@ -43,7 +43,6 @@ const AddDishForm = () => {
             console.log(ingredient);
          });
       } else {
-         // Если ингредиент уже выбран, выводим сообщение об ошибке
          console.log(`Ингредиент "${ingredient.title}" уже добавлен`);
       }
    };
@@ -56,9 +55,10 @@ const AddDishForm = () => {
          if (selectedIngredients.length > 0 && title.length > 0) {
             console.log(selectedIngredients.map(ingredient => ingredient.id));
             await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id) });
-            alert('Блюдо успешно добавлено в заявку!');
             setSelectedIngredients([]);
             setTitle('');
+            alert('Блюдо успешно добавлено в заявку!');
+            
          } else {
             alert('Нельзя добавить блюдо без ингредиентов или без названия!');
          }
