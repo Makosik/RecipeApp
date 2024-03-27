@@ -1,32 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { setOrders } from '../ordersSlice';
 
 function ShowOrders() {
-   const [orders, setOrders] = useState([]);
+   //const [orders, setOrders] = useState([]);
+   const dispatch = useDispatch();
+   const orders = useSelector(state => state.orders.orders);
+   console.log(orders)
 
    useEffect(() => {
-      const fetchData = async () => {
-         try {
-            const result = await axios.get('/api/orders');
-            setOrders(result.data);
-            //console.log(result.data)
-         } catch (error) {
-            console.error('Ошибка при получении заказов:', error);
-         }
-      };
-
       fetchData();
-   },[orders]);
+   }, []); 
+
+   const fetchData = async () => {
+      try {
+         const result = await axios.get('/api/orders');
+         dispatch(setOrders(result.data));
+         console.log(`Its SHOW ${result.data}`)
+      } catch (error) {
+         console.error('Ошибка при получении заказов:', error);
+      }
+   };
 
    const handleDeleteOrder = async (order_id) => {
       try {
          // Отправляем запрос на сервер для удаления заявки
          const response = await axios.delete(`/api/orders/${order_id}`);
+         fetchData();
          console.log('Заявка успешно удалена:', response.data);
-         // Здесь вы можете выполнить какие-либо дополнительные действия после успешного удаления, например, обновить список заказов
       } catch (error) {
          console.error('Ошибка при удалении заявки:', error);
-         // Обработка ошибки, например, вывод сообщения пользователю
       }
    };
 
@@ -34,6 +38,7 @@ function ShowOrders() {
       try {
          const response = await axios.post(`/api/addOrder`, { "dish_title": dish_title, "ingredient_id": ingredient_id });
          await handleDeleteOrder(order_id);
+         fetchData();
          console.log('Заявка успешно добавлена:', response.data);
          alert('Заявка успешно добавлена!');
       } catch (error) {

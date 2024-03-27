@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setOrders } from '../ordersSlice';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
@@ -9,18 +11,25 @@ const AddDishForm = () => {
    const [availableIngredients, setAvailableIngredients] = useState([]);
    const [selectedIngredients, setSelectedIngredients] = useState([]);
 
+   const dispatch = useDispatch();
+
    useEffect(() => {
       // Загрузка доступных ингредиентов из базы данных
       const fetchIngredients = async () => {
          try {
             const response = await axios.get('/api/ingredients');
             setAvailableIngredients(response.data);
+            const result = await axios.get('/api/orders');
+            dispatch(setOrders(result.data)); // Обновление данных о заказах в хранилище Redux
+            // console.log(`Its CREATE ${result.data}`)
          } catch (error) {
             console.error('Ошибка при загрузке ингредиентов:', error);
          }
       };
       fetchIngredients();
    }, []);
+
+
 
    const handleDishInputChange = (e) => {
       setTitle(e.target.value);
@@ -55,10 +64,14 @@ const AddDishForm = () => {
          if (selectedIngredients.length > 0 && title.length > 0) {
             console.log(selectedIngredients.map(ingredient => ingredient.id));
             await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id) });
+
+            const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
+            dispatch(setOrders(updatedOrders)); // Обновление данных о заказах в Redux
+
             setSelectedIngredients([]);
             setTitle('');
             alert('Блюдо успешно добавлено в заявку!');
-            
+
          } else {
             alert('Нельзя добавить блюдо без ингредиентов или без названия!');
          }
@@ -83,6 +96,7 @@ const AddDishForm = () => {
                   options={availableIngredients}
                   getOptionLabel={(option) => option.title}
                   value={null}
+                  sx={{ width: 300 }}
                   onChange={(event, newValue) => {
                      console.log(newValue);
                      setIngredient(newValue);

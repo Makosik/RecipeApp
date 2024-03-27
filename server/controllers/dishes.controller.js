@@ -3,6 +3,9 @@ const db = require("../db");
 class DishesController {
 
    async getDishes(req, res) {
+
+      const searchValue = req.query.search;
+
       const dishes = await db.query(
          `SELECT Dishes.title AS dish_title, 
          ARRAY_AGG(Ingredients.title) AS ingredient_titles
@@ -56,17 +59,6 @@ class DishesController {
          res.status(500).json({ error: 'Ошибка при удалении заявки' });
       }
    }
-
-   // async addOrder(req, res) {
-   //    try {
-   //       const { dish_title } = req.body;
-   //       await db.query('INSERT INTO Dishes (title) VALUES ($1)', [dish_title]);
-   //       res.json({ success: true, message: 'Заявка успешно одобрена' });
-   //    } catch (error) {
-   //       console.error('Ошибка при добавлении заявки:', error);
-   //       res.status(500).json({ error: 'Ошибка при добавлении заявки' });
-   //    }
-   // }
 
    async addOrder(req, res) {
       try {
