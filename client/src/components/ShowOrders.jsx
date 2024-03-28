@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOrders } from '../ordersSlice';
+import { setDishes } from '../dishesSlice';
 
 function ShowOrders() {
    //const [orders, setOrders] = useState([]);
@@ -17,7 +18,9 @@ function ShowOrders() {
       try {
          const result = await axios.get('/api/orders');
          dispatch(setOrders(result.data));
-         console.log(`Its SHOW ${result.data}`)
+         const updateDishes = await axios.get('/api/dishes');
+         dispatch(setDishes(updateDishes.data));
+         //console.log(`Its SHOW ${result.data}`)
       } catch (error) {
          console.error('Ошибка при получении заказов:', error);
       }

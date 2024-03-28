@@ -19,9 +19,6 @@ const AddDishForm = () => {
          try {
             const response = await axios.get('/api/ingredients');
             setAvailableIngredients(response.data);
-            const result = await axios.get('/api/orders');
-            dispatch(setOrders(result.data)); // Обновление данных о заказах в хранилище Redux
-            // console.log(`Its CREATE ${result.data}`)
          } catch (error) {
             console.error('Ошибка при загрузке ингредиентов:', error);
          }
@@ -62,12 +59,9 @@ const AddDishForm = () => {
       e.preventDefault();
       try {
          if (selectedIngredients.length > 0 && title.length > 0) {
-            console.log(selectedIngredients.map(ingredient => ingredient.id));
             await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id) });
-
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
-            dispatch(setOrders(updatedOrders)); // Обновление данных о заказах в Redux
-
+            dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);
             setTitle('');
             alert('Блюдо успешно добавлено в заявку!');
