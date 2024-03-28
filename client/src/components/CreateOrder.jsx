@@ -53,6 +53,19 @@ const AddDishForm = () => {
       }
    };
 
+   const handleIngredientDelete = (title) => {
+      selectedIngredients.map((item, index) => {
+         if (item.title === title) {
+            selectedIngredients.splice(index, 1);
+            setSelectedIngredients([...selectedIngredients]);
+         }
+         else {
+            console.log('Элемент не найден');
+         }
+      })
+
+   };
+
 
 
    const handleSubmit = async (e) => {
@@ -92,17 +105,17 @@ const AddDishForm = () => {
                   value={null}
                   sx={{ width: 300 }}
                   onChange={(event, newValue) => {
-                     console.log(newValue);
+                     //console.log(newValue);
                      setIngredient(newValue);
                   }}
                   renderInput={(params) => <TextField {...params} label="Ингредиент" />}
                />
             </label>
-            <button type="button" onClick={handleIngredientAdd}>Добавить ингредиент</button>
+            <button type="button" onClick={() => handleIngredientAdd()}>Добавить ингредиент</button>
             <br />
             <ul>
                {selectedIngredients.map(ingredient => (
-                  <li key={ingredient.id}>{ingredient.title}</li>
+                  <li key={ingredient.id}>{ingredient.title} <button type='button' onClick={() => handleIngredientDelete(ingredient.title)}>X</button></li>
                ))}
             </ul>
             <button type="submit">Добавить блюдо</button>
