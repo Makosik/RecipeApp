@@ -5,14 +5,12 @@ import { setOrders } from '../ordersSlice';
 import { setDishes } from '../dishesSlice';
 
 function ShowOrders() {
-   //const [orders, setOrders] = useState([]);
    const dispatch = useDispatch();
    const orders = useSelector(state => state.orders.orders);
-   console.log(orders)
-
+ 
    useEffect(() => {
       fetchData();
-   }, []); 
+   }, []);
 
    const fetchData = async () => {
       try {
@@ -52,7 +50,7 @@ function ShowOrders() {
 
    return (
       <div>
-         <h1>Orders:</h1>
+         <h1>Заявки:</h1>
          <div>
             {orders.map(order => (
                <div key={order.order_id}>
