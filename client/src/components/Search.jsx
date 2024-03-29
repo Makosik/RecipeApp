@@ -1,14 +1,14 @@
 import React from 'react'
 
-function Search({searchValue}) {
+function Search({ searchValue, setSearchValue }) {
 
    const handleInputSearchChange = (event) => {
-      searchValue(event.target.value);
+      setSearchValue(event.target.value);
    }
 
    return (
       <div>
-         <input type="text" placeholder="Search" value={null} onChange={handleInputSearchChange} />
+         <input type="text" placeholder="Search" value={searchValue} onChange={handleInputSearchChange} />
       </div>
    )
 }
