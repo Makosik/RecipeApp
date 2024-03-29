@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setOrders } from '../ordersSlice';
-import { setDishes } from '../dishesSlice';
+import { setOrders } from '../redux/ordersSlice';
+import { setDishes } from '../redux/dishesSlice';
 
 function ShowOrders() {
    const dispatch = useDispatch();
    const orders = useSelector(state => state.orders.orders);
- 
+
    useEffect(() => {
       fetchData();
    }, []);
