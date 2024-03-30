@@ -7,8 +7,8 @@ import ShowOrders from './components/ShowOrders';
 function App() {
    return (
       <>
-         <AddDishForm />
-         <ShowOrders />
+         {/* <AddDishForm />
+         <ShowOrders /> */}
          <DataComponent />
       </>
    )
