@@ -1,10 +1,10 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Search from "./Search";
 import axios from 'axios';
 import { setDishes } from '../redux/dishesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-const DataComponent = forwardRef(({ open, setOpen }, ref) => {
+const DataComponent = () => {
    const dispatch = useDispatch();
    const dishes = useSelector(state => state.dishes.dishes);
    const [search, setSearch] = useState("");
@@ -12,7 +12,6 @@ const DataComponent = forwardRef(({ open, setOpen }, ref) => {
    const [selectedDish, setSelectedDish] = useState([]);
    const [isblock, setIsblock] = useState(false);
    const [resultSearching, setResultSearching] = useState("");
-   const ref = useRef(null); // Создаем ссылку на внешний контейнер
    const [isSearchActive, setIsSearchActive] = useState(false); // Новое состояние для отслеживания активности поиска
 
    const fetchData = async () => {
@@ -31,15 +30,7 @@ const DataComponent = forwardRef(({ open, setOpen }, ref) => {
 
    useEffect(() => {
       filter();
-   }, [search]);
-
-   useEffect(() => {
-      const handleClickOutside = (event) => {
-         if (ref.current && !ref.current.contains(event.target)) {
-            setIsSearchActive(false); // Скрыть результаты по клику вне блока поиска
-         }
-      }
-   });
+   }, [search, isSearchActive]);
 
    const filter = () => {
       if (search.length > 0) {
@@ -64,7 +55,10 @@ const DataComponent = forwardRef(({ open, setOpen }, ref) => {
 
    const handleKeyPress = (event) => {
       if (event.key === 'Enter') {
-         console.log("ENTER")
+         event.target.blur();
+         setResultSearching(search)
+         setIsblock(true)
+         setIsSearchActive(false);
          filterSearchDishes();
       }
    };
@@ -76,10 +70,18 @@ const DataComponent = forwardRef(({ open, setOpen }, ref) => {
 
 
    return (
-      <div ref={ref}>
+      <div>
          <div style={{ width: "600px" }}>
-            <Search searchValue={search} setSearchValue={setSearch} onKeyPress={handleKeyPress} onClick={() => setOpen(!open)} setIsblock={setIsblock} setSelectedDish={setSelectedDish} />
-            <div style={{ display: 'flex', flexDirection: "column" }}>
+            <Search
+               searchValue={search}
+               setSearchValue={setSearch}
+               onKeyPress={handleKeyPress}
+               setIsblock={setIsblock}
+               setSelectedDish={setSelectedDish}
+               handleFocus={setIsSearchActive}
+               handleBlur={setIsSearchActive}
+            />
+            <div style={{ display: isSearchActive ? 'flex' : "none", flexDirection: "column" }}>
                {selectedDish.map(item => (
                   <span onClick={() => handleAddSelectedSearch(item)} style={{ cursor: 'pointer', marginTop: '10px' }} key={item.id}  >{item.dish_title}</span>
                ))}
@@ -101,6 +103,6 @@ const DataComponent = forwardRef(({ open, setOpen }, ref) => {
          </div>
       </div>
    );
-});
+};
 
 export default DataComponent;
