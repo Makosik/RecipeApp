@@ -26,6 +26,7 @@ function ShowOrders() {
 
    const handleDeleteOrder = async (order_id) => {
       try {
+         console.log(order_id)
          // Отправляем запрос на сервер для удаления заявки
          const response = await axios.delete(`/api/orders/${order_id}`);
          fetchData();
@@ -35,9 +36,9 @@ function ShowOrders() {
       }
    };
 
-   const handleAddOrder = async (dish_title, order_id, ingredient_id) => {
+   const handleAddOrder = async (dish_title, order_id, ingredient_id, description) => {
       try {
-         const response = await axios.post(`/api/addOrder`, { "dish_title": dish_title, "ingredient_id": ingredient_id });
+         const response = await axios.post(`/api/addOrder`, { "dish_title": dish_title, "ingredient_id": ingredient_id, "description": description });
          await handleDeleteOrder(order_id);
          fetchData();
          console.log('Заявка успешно добавлена:', response.data);
@@ -47,6 +48,7 @@ function ShowOrders() {
          alert('Заявка успешно добавлена!');
       }
    };
+
 
    return (
       <div>
@@ -62,8 +64,9 @@ function ShowOrders() {
                         <li key={ingredient}>{ingredient}</li>
                      ))}
                   </ul>
+                  <div>Описание: {order.description}</div>
                   <button type="button" onClick={() => handleDeleteOrder(order.order_id)}>Удалить заявку</button>
-                  <button type="button" onClick={() => handleAddOrder(order.dish_title, order.order_id, order.ingredient_id)}>Добавить заявку</button>
+                  <button type="button" onClick={() => handleAddOrder(order.dish_title, order.order_id, order.ingredient_id, order.description)}>Добавить заявку</button>
                </div>
             ))}
          </div>

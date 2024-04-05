@@ -9,8 +9,10 @@ select * from ingredients;
 
 CREATE TABLE Dishes (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL
+    title VARCHAR(255) NOT NULL,
+	description VARCHAR(255)
 );
+
 
 drop table Dishes CASCADE;
 
@@ -27,12 +29,21 @@ drop table Dishes_Ingredients CASCADE;
 
 select * from Dishes_Ingredients;
 
-SELECT Dishes.title AS dish_title, 
-         ARRAY_AGG(Ingredients.title) AS ingredient_titles
-         FROM Dishes
-         JOIN Dishes_Ingredients ON Dishes.id = Dishes_Ingredients.dish_id
-         JOIN Ingredients ON Ingredients.id = Dishes_Ingredients.ingredient_id
-         GROUP BY Dishes.title
+SELECT
+         Dishes.title AS dish_title,
+         ARRAY_AGG(Ingredients.title) AS ingredient_titles,
+         Dishes.description AS description
+     FROM
+         Dishes
+     JOIN
+         Dishes_Ingredients ON Dishes.id = Dishes_Ingredients.dish_id
+     JOIN
+         Ingredients ON Ingredients.id = Dishes_Ingredients.ingredient_id
+     GROUP BY
+         Dishes.title, Dishes.description
+     ORDER BY
+         MAX(Dishes_Ingredients.created_at_DI) DESC;
+
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -45,10 +56,11 @@ CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     dish_title VARCHAR(255) NOT NULL,
     ingredient_id INTEGER [],
-    created_at TIMESTAMP NOT NULL DEFAULT now()
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+	description VARCHAR(255)
 );
 
-drop TABLE orders;
+drop TABLE orders CASCADE;
 
 SELECT* from orders;
 

@@ -14,7 +14,7 @@ function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelect
       setIsblock(false)
       setSelectedDish([]);
    }
-   
+
 
    return (
       <div>
