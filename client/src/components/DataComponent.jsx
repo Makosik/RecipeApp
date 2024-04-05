@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Search from "./Search";
 import axios from 'axios';
 import { setDishes } from '../redux/dishesSlice';
@@ -12,7 +12,7 @@ const DataComponent = () => {
    const [selectedDish, setSelectedDish] = useState([]);
    const [isblock, setIsblock] = useState(false);
    const [resultSearching, setResultSearching] = useState("");
-   const [isSearchActive, setIsSearchActive] = useState(false); // Новое состояние для отслеживания активности поиска
+   const [isSearchActive, setIsSearchActive] = useState(true); // Новое состояние для отслеживания активности поиска
 
    const fetchData = async () => {
       try {
@@ -30,7 +30,7 @@ const DataComponent = () => {
 
    useEffect(() => {
       filter();
-   }, [search, isSearchActive]);
+   }, [search]);
 
    const filter = () => {
       if (search.length > 0) {
@@ -68,6 +68,18 @@ const DataComponent = () => {
       setIsblock(false)
    }
 
+   const handleFocus = () => {
+      setIsSearchActive(true);
+   };
+
+   const handleBlur = () => {
+      // Добавляем небольшую задержку перед установкой isSearchActive в false
+      const timerId = setTimeout(() => {
+         setIsSearchActive(false);
+      }, 100); // Измените значение задержки по вашему усмотрению (в миллисекундах)
+      setTimeout(timerId);
+   };
+
 
    return (
       <div>
@@ -78,8 +90,8 @@ const DataComponent = () => {
                onKeyPress={handleKeyPress}
                setIsblock={setIsblock}
                setSelectedDish={setSelectedDish}
-               handleFocus={setIsSearchActive}
-               handleBlur={setIsSearchActive}
+               handleFocus={handleFocus}
+               handleBlur={handleBlur}
             />
             <div style={{ display: isSearchActive ? 'flex' : "none", flexDirection: "column" }}>
                {selectedDish.map(item => (
@@ -98,6 +110,7 @@ const DataComponent = () => {
                         <li key={item.id}>{ingr}</li>
                      ))}
                   </ul>
+                  <div>Описание: {item.description}</div>
                </div>
             ))}
          </div>

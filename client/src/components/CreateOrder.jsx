@@ -10,6 +10,7 @@ const AddDishForm = () => {
    const [ingredient, setIngredient] = useState('');
    const [availableIngredients, setAvailableIngredients] = useState([]);
    const [selectedIngredients, setSelectedIngredients] = useState([]);
+   const [description, setDescription] = useState('');
 
    const dispatch = useDispatch();
 
@@ -66,13 +67,17 @@ const AddDishForm = () => {
 
    };
 
+   const handleChangeTextarea = (e) => {
+      setDescription(e.target.value)
+   }
+
 
 
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
          if (selectedIngredients.length > 0 && title.length > 0) {
-            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id) });
+            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description:description });
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);
@@ -112,12 +117,15 @@ const AddDishForm = () => {
                />
             </label>
             <button type="button" onClick={() => handleIngredientAdd()}>Добавить ингредиент</button>
-            <br />
             <ul>
                {selectedIngredients.map(ingredient => (
                   <li key={ingredient.id}>{ingredient.title} <button type='button' onClick={() => handleIngredientDelete(ingredient.title)}>X</button></li>
                ))}
             </ul>
+            <label>
+               <textarea name="description" onChange={handleChangeTextarea} placeholder='Добавьте описание' id="" cols="30" rows="10"></textarea>
+            </label>
+            <br />
             <button type="submit">Добавить блюдо</button>
          </form>
       </div>
