@@ -10,11 +10,10 @@ function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelect
       setSearchValue([]);
    }
 
-   const handleHiddenBlock = () => {
-      setIsblock(false)
-      setSelectedDish([]);
-   }
-
+   // const handleHiddenBlock = () => {
+   //    setIsblock(false)
+   //    setSelectedDish([]);
+   // }
 
    return (
       <div>
@@ -25,7 +24,7 @@ function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelect
             onFocus={handleFocus}
             onBlur={handleBlur}
          />
-         {<button onClick={() => { handleDeleteButton(); handleHiddenBlock() }}>X</button>}
+         {<button onClick={() => { handleDeleteButton()}}>X</button>}
       </div>
    )
 }

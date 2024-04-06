@@ -27,7 +27,10 @@ const AddDishForm = () => {
       fetchIngredients();
    }, []);
 
-
+ 
+   const handleChangeTextarea = (e) => {
+      setDescription(e.target.value)
+   }
 
    const handleDishInputChange = (e) => {
       setTitle(e.target.value);
@@ -35,14 +38,12 @@ const AddDishForm = () => {
 
 
    const handleIngredientAdd = () => {
-      // Проверяем наличие выбранного ингредиента в списке selectedIngredients
       const isIngredientSelected = selectedIngredients.some(selectedIngredient => selectedIngredient.title === ingredient.title);
       if (!ingredient) {
          alert("Нужно написать ингредиент, который вы хотите добавить!")
          return;
       }
       if (!isIngredientSelected) {
-         // Если ингредиент еще не выбран, добавляем его в список selectedIngredients
          setSelectedIngredients(prevIngredients => [...prevIngredients, ingredient]);
          console.log(`Ингредиент добавлен: ${ingredient.title}`);
          console.log(`Все выбранные Ингредиенты:`);
@@ -67,12 +68,6 @@ const AddDishForm = () => {
 
    };
 
-   const handleChangeTextarea = (e) => {
-      setDescription(e.target.value)
-   }
-
-
-
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
@@ -81,6 +76,7 @@ const AddDishForm = () => {
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);
+            setDescription('');
             setTitle('');
             alert('Блюдо успешно добавлено в заявку!');
 
@@ -110,7 +106,6 @@ const AddDishForm = () => {
                   value={null}
                   sx={{ width: 300 }}
                   onChange={(event, newValue) => {
-                     //console.log(newValue);
                      setIngredient(newValue);
                   }}
                   renderInput={(params) => <TextField {...params} label="Ингредиент" />}
@@ -123,7 +118,7 @@ const AddDishForm = () => {
                ))}
             </ul>
             <label>
-               <textarea name="description" onChange={handleChangeTextarea} placeholder='Добавьте описание' id="" cols="30" rows="10"></textarea>
+               <textarea name="description" onChange={handleChangeTextarea} value={description} placeholder='Добавьте описание' id="" cols="30" rows="10"></textarea>
             </label>
             <br />
             <button type="submit">Добавить блюдо</button>

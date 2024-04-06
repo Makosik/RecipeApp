@@ -12,7 +12,8 @@ const DataComponent = () => {
    const [selectedDish, setSelectedDish] = useState([]);
    const [isblock, setIsblock] = useState(false);
    const [resultSearching, setResultSearching] = useState("");
-   const [isSearchActive, setIsSearchActive] = useState(true); // Новое состояние для отслеживания активности поиска
+   const [isSearchActive, setIsSearchActive] = useState(true);
+
 
    const fetchData = async () => {
       try {
@@ -24,6 +25,10 @@ const DataComponent = () => {
       }
    };
 
+   useEffect(() => {
+      setSearchResult(dishes);
+   }, [dishes]);
+   
    useEffect(() => {
       fetchData();
    }, []);
@@ -73,10 +78,9 @@ const DataComponent = () => {
    };
 
    const handleBlur = () => {
-      // Добавляем небольшую задержку перед установкой isSearchActive в false
       const timerId = setTimeout(() => {
          setIsSearchActive(false);
-      }, 100); // Измените значение задержки по вашему усмотрению (в миллисекундах)
+      }, 100); 
       setTimeout(timerId);
    };
 
