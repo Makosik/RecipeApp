@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { setOrders } from '../redux/ordersSlice';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import CookingStep from "./CookingStep";
 
 const AddDishForm = () => {
    const [title, setTitle] = useState('');
@@ -11,7 +12,7 @@ const AddDishForm = () => {
    const [availableIngredients, setAvailableIngredients] = useState([]);
    const [selectedIngredients, setSelectedIngredients] = useState([]);
    const [description, setDescription] = useState('');
-
+   const [steps, setSteps] = useState([]);
    const dispatch = useDispatch();
 
    useEffect(() => {
@@ -65,14 +66,17 @@ const AddDishForm = () => {
             console.log('Элемент не найден');
          }
       })
-
    };
+
+   const handleAddStep = (newStep) => {
+      setSteps([...steps, newStep]);
+    };
 
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
          if (selectedIngredients.length > 0 && title.length > 0) {
-            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description:description });
+            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description:description, cooking_steps: steps });
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);
@@ -88,6 +92,7 @@ const AddDishForm = () => {
          alert('Ошибка при добавлении блюда в заявку!');
       }
    };
+
 
    return (
       <div>
@@ -121,7 +126,18 @@ const AddDishForm = () => {
                <textarea name="description" onChange={handleChangeTextarea} value={description} placeholder='Добавьте описание' id="" cols="30" rows="10"></textarea>
             </label>
             <br />
-            <button type="submit">Добавить блюдо</button>
+            <label>
+               <CookingStep onAddStep={handleAddStep} />
+               <div>
+                  {steps.map((step, index) => (
+                     <li key={index}>
+                        {`Шаг ${step.step_number}:`}
+                        <div style={{ width: "300px", overflowWrap: "break-word" }}>{step.step_description}</div>
+                     </li>
+                  ))}
+                  </div>
+            </label>
+            <button style={{display: "block", marginTop: "50px"}} type="submit">Добавить блюдо</button>
          </form>
       </div>
    );

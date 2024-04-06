@@ -29,9 +29,9 @@ class DishesController {
    }
 
    async createDish(req, res) {
-      const { dish_title, ingredient_id, description } = req.body;
+      const { dish_title, ingredient_id, description, cooking_steps } = req.body;
       try {
-         await db.query('INSERT INTO orders (dish_title, ingredient_id, description) VALUES ($1, $2, $3)', [dish_title, ingredient_id, description]);
+         await db.query('INSERT INTO orders (dish_title, ingredient_id, description, cooking_steps) VALUES ($1, $2, $3, $4)', [dish_title, ingredient_id, description, cooking_steps]);
          res.status(201).json({ message: 'Блюдо успешно создано' });
       } catch (error) {
          console.error('Ошибка при создании блюда:', error);

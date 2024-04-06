@@ -57,12 +57,14 @@ CREATE TABLE orders (
     dish_title VARCHAR(255) NOT NULL,
     ingredient_id INTEGER [],
     created_at TIMESTAMP NOT NULL DEFAULT now(),
-	description VARCHAR(255)
+    description VARCHAR(255),
+    cooking_steps JSONB []
 );
+
 
 drop TABLE orders CASCADE;
 
-SELECT* from orders;
+SELECT cooking_steps from orders;
 
 
 SELECT
@@ -76,6 +78,36 @@ JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
 JOIN ingredients i ON i.id = ing_id
 GROUP BY o.id, o.dish_title, formatted_created_at
 ORDER BY o.id;
+
+
+SELECT
+   o.id AS order_id,
+   o.dish_title,
+   o.description,
+   TO_CHAR(o.created_at, 'DD.MM.YYYY HH24:MI') AS created_at,
+   ARRAY_AGG(i.title) AS ingredients,
+   ARRAY_AGG(i.id) AS ingredient_id,
+   COALESCE(jsonb_agg(cs.step) FILTER (WHERE cs.step IS NOT NULL), '[]'::jsonb) AS cooking_steps
+FROM orders o
+JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
+JOIN ingredients i ON i.id = ing_id
+LEFT JOIN LATERAL jsonb_array_elements_text(o.cooking_steps) AS cs(step) ON true
+GROUP BY o.id, o.dish_title, o.description, o.created_at
+ORDER BY o.id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
