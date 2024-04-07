@@ -57,43 +57,36 @@ CREATE TABLE orders (
     dish_title VARCHAR(255) NOT NULL,
     ingredient_id INTEGER [],
     created_at TIMESTAMP NOT NULL DEFAULT now(),
-    description VARCHAR(255),
-    cooking_steps JSONB []
+    description VARCHAR(255)
 );
-
 
 drop TABLE orders CASCADE;
 
-SELECT cooking_steps from orders;
+SELECT * from orders;
 
 
-SELECT
-   o.id AS order_id,
-   o.dish_title,
-   TO_CHAR(o.created_at, 'DD.MM.YYYY HH24:MI') AS formatted_created_at,
-   ARRAY_AGG(i.title) AS ingredients,
-   ARRAY_AGG(i.id) AS ingredient_id
-FROM orders o
-JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
-JOIN ingredients i ON i.id = ing_id
-GROUP BY o.id, o.dish_title, formatted_created_at
-ORDER BY o.id;
+CREATE TABLE stepsForOrders (
+    step_id SERIAL PRIMARY KEY,
+    order_id INTEGER REFERENCES orders(id),
+    step_number INTEGER NOT NULL,
+    step_description TEXT
+);
+
+drop TABLE stepsForOrders CASCADE;
+
+SELECT * from stepsForOrders;
 
 
-SELECT
-   o.id AS order_id,
-   o.dish_title,
-   o.description,
-   TO_CHAR(o.created_at, 'DD.MM.YYYY HH24:MI') AS created_at,
-   ARRAY_AGG(i.title) AS ingredients,
-   ARRAY_AGG(i.id) AS ingredient_id,
-   COALESCE(jsonb_agg(cs.step) FILTER (WHERE cs.step IS NOT NULL), '[]'::jsonb) AS cooking_steps
-FROM orders o
-JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
-JOIN ingredients i ON i.id = ing_id
-LEFT JOIN LATERAL jsonb_array_elements_text(o.cooking_steps) AS cs(step) ON true
-GROUP BY o.id, o.dish_title, o.description, o.created_at
-ORDER BY o.id;
+CREATE TABLE stepsForDishes (
+    step_id SERIAL PRIMARY KEY,
+    dish_id INTEGER REFERENCES dishes(id),
+    step_number INTEGER NOT NULL,
+    step_description TEXT
+);
+
+drop TABLE stepsForDishes CASCADE;
+
+SELECT * from stepsForDishes;
 
 
 

@@ -65,6 +65,15 @@ function ShowOrders() {
                      ))}
                   </ul>
                   <div>Описание: {order.description}</div>
+                  <div>
+                  {order.step_numbers.map((stepNumber, index) => (
+                     <li key={index}>
+                        {`Шаг ${stepNumber}:`}
+                        <div style={{ width: "300px", overflowWrap: "break-word" }}>{order.step_descriptions[index]}</div>
+                     </li>
+                  ))}
+
+               </div>
                   <button type="button" onClick={() => handleDeleteOrder(order.order_id)}>Удалить заявку</button>
                   <button type="button" onClick={() => handleAddOrder(order.dish_title, order.order_id, order.ingredient_id, order.description)}>Добавить заявку</button>
                </div>

@@ -6,14 +6,17 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import CookingStep from "./CookingStep";
 
-const AddDishForm = () => {
+function AddDishForm() {
    const [title, setTitle] = useState('');
    const [ingredient, setIngredient] = useState('');
    const [availableIngredients, setAvailableIngredients] = useState([]);
    const [selectedIngredients, setSelectedIngredients] = useState([]);
    const [description, setDescription] = useState('');
    const [steps, setSteps] = useState([]);
+   const [stepNumber, setStepNumber] = useState(1);
+   const [stepDescription, setStepDescription] = useState('');
    const dispatch = useDispatch();
+
 
    useEffect(() => {
       // Загрузка доступных ингредиентов из базы данных
@@ -28,15 +31,9 @@ const AddDishForm = () => {
       fetchIngredients();
    }, []);
 
- 
-   const handleChangeTextarea = (e) => {
-      setDescription(e.target.value)
-   }
-
    const handleDishInputChange = (e) => {
       setTitle(e.target.value);
    };
-
 
    const handleIngredientAdd = () => {
       const isIngredientSelected = selectedIngredients.some(selectedIngredient => selectedIngredient.title === ingredient.title);
@@ -57,33 +54,36 @@ const AddDishForm = () => {
    };
 
    const handleIngredientDelete = (title) => {
-      selectedIngredients.map((item, index) => {
-         if (item.title === title) {
-            selectedIngredients.splice(index, 1);
-            setSelectedIngredients([...selectedIngredients]);
-         }
-         else {
-            console.log('Элемент не найден');
-         }
-      })
+      setSelectedIngredients(prevIngredients => prevIngredients.filter(ingredient => ingredient.title !== title));
    };
 
-   const handleAddStep = (newStep) => {
+   const handleChangeTextarea = (e) => {
+      setDescription(e.target.value)
+   };
+
+   const handleAddStep = () => {
+      const newStep = {
+         step_number: stepNumber,
+         step_description: stepDescription
+      };
       setSteps([...steps, newStep]);
-    };
+      setStepNumber(stepNumber + 1);
+      setStepDescription('');
+   };
 
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
          if (selectedIngredients.length > 0 && title.length > 0) {
-            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description:description, cooking_steps: steps });
+            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description:description, cookingSteps: steps});
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);
             setDescription('');
             setTitle('');
+            setSteps([]);
+            setStepNumber(1)
             alert('Блюдо успешно добавлено в заявку!');
-
          } else {
             alert('Нельзя добавить блюдо без ингредиентов или без названия!');
          }
@@ -92,7 +92,6 @@ const AddDishForm = () => {
          alert('Ошибка при добавлении блюда в заявку!');
       }
    };
-
 
    return (
       <div>
@@ -116,10 +115,12 @@ const AddDishForm = () => {
                   renderInput={(params) => <TextField {...params} label="Ингредиент" />}
                />
             </label>
-            <button type="button" onClick={() => handleIngredientAdd()}>Добавить ингредиент</button>
+            <button type="button" onClick={handleIngredientAdd}>Добавить ингредиент</button>
             <ul>
                {selectedIngredients.map(ingredient => (
-                  <li key={ingredient.id}>{ingredient.title} <button type='button' onClick={() => handleIngredientDelete(ingredient.title)}>X</button></li>
+                  <li key={ingredient.id}>
+                     {ingredient.title} <button type='button' onClick={() => handleIngredientDelete(ingredient.title)}>X</button>
+                  </li>
                ))}
             </ul>
             <label>
@@ -127,7 +128,7 @@ const AddDishForm = () => {
             </label>
             <br />
             <label>
-               <CookingStep onAddStep={handleAddStep} />
+               <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription} />
                <div>
                   {steps.map((step, index) => (
                      <li key={index}>
@@ -135,12 +136,13 @@ const AddDishForm = () => {
                         <div style={{ width: "300px", overflowWrap: "break-word" }}>{step.step_description}</div>
                      </li>
                   ))}
-                  </div>
+               </div>
+               <button type='button' onClick={handleAddStep}>Добавить шаг</button>
             </label>
-            <button style={{display: "block", marginTop: "50px"}} type="submit">Добавить блюдо</button>
+            <button style={{ display: "block", marginTop: "50px" }} type="submit">Добавить блюдо</button>
          </form>
       </div>
    );
-};
+}
 
 export default AddDishForm;

@@ -29,30 +29,59 @@ class DishesController {
    }
 
    async createDish(req, res) {
-      const { dish_title, ingredient_id, description, cooking_steps } = req.body;
+      const { dish_title, ingredient_id, description, cookingSteps } = req.body;
       try {
-         await db.query('INSERT INTO orders (dish_title, ingredient_id, description, cooking_steps) VALUES ($1, $2, $3, $4)', [dish_title, ingredient_id, description, cooking_steps]);
+         const result = await db.query('INSERT INTO orders (dish_title, ingredient_id, description) VALUES ($1, $2, $3) RETURNING id', [dish_title, ingredient_id, description]);
+         const orderId = result.rows[0].id; // Получаем id вставленной записи
+   
+         // Вставляем информацию о каждом шаге
+         for (const step of cookingSteps) {
+            await db.query('INSERT INTO stepsForOrders (order_id, step_number, step_description) VALUES ($1, $2, $3)', [orderId, step.step_number, step.step_description]);
+         }
+   
          res.status(201).json({ message: 'Блюдо успешно создано' });
       } catch (error) {
          console.error('Ошибка при создании блюда:', error);
          res.status(500).json({ error: 'Ошибка при создании блюда' });
       }
-   };
+   }
+   
+
+   async createSteps(res,req){
+      
+   }
 
    async getOrders(req, res) {
       const orders = await db.query(
          `SELECT
          o.id AS order_id,
          o.dish_title,
-         o.description,
+         o.description AS order_description,
          TO_CHAR(o.created_at, 'DD.MM.YYYY HH24:MI') AS created_at,
-         ARRAY_AGG(i.title) AS ingredients,
-         ARRAY_AGG(i.id) AS ingredient_id
-      FROM orders o
-      JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
-      JOIN ingredients i ON i.id = ing_id
-      GROUP BY o.id, o.dish_title, o.description, created_at
-      ORDER BY o.id;`)
+         ARRAY_AGG(DISTINCT i.title) AS ingredients,
+         ARRAY_AGG(DISTINCT i.id) AS ingredient_id,
+         ARRAY_AGG(DISTINCT s.step_number) AS step_numbers,
+         ARRAY_AGG(DISTINCT s.step_description) AS step_descriptions
+     FROM
+         orders o
+     JOIN
+         LATERAL unnest(o.ingredient_id) AS ing_id ON true
+     JOIN
+         ingredients i ON i.id = ing_id
+     LEFT JOIN LATERAL (
+         SELECT
+             step_number,
+             step_description
+         FROM
+             stepsForOrders s
+         WHERE
+             s.order_id = o.id
+     ) s ON true
+     GROUP BY
+         o.id, o.dish_title, o.description, created_at
+     ORDER BY
+         o.id;
+     `)
       res.json(orders.rows);
    }
 

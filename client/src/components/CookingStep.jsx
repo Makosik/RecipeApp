@@ -1,22 +1,8 @@
 import React, { useState } from 'react';
 
-function AddStepForm({ onAddStep }) {
-  const [stepNumber, setStepNumber] = useState(1);
-  const [stepDescription, setStepDescription] = useState('');
+function AddStepForm({ stepNumber, stepDescription, setStepDescription}) {
 
-  const handleAddStep = () => {
-
-    const newStep = {
-      step_number: stepNumber,
-      step_description: stepDescription
-    };
-
-    onAddStep(newStep);
-
-    setStepNumber(stepNumber + 1);
-    setStepDescription('');
-  };
-
+   
   return (
     <div>
       <div>Номер шага: {stepNumber}</div>
@@ -27,7 +13,7 @@ function AddStepForm({ onAddStep }) {
         value={stepDescription}
         onChange={(e) => setStepDescription(e.target.value)}
       />
-      <button type='button' onClick={handleAddStep}>Добавить шаг</button>
+ 
     </div>
   );
 }
