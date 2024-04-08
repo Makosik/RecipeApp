@@ -9,7 +9,7 @@ function App() {
       <>
          <AddDishForm />
          <ShowOrders />
-         {/* <DataComponent /> */}
+         <DataComponent />
       </>
    )
 }

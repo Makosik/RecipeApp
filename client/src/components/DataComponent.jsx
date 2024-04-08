@@ -115,6 +115,14 @@ const DataComponent = () => {
                      ))}
                   </ul>
                   <div>Описание: {item.description}</div>
+                  <div>
+                  {item.step_numbers.map((stepNumber, index) => (
+                     <li key={index}>
+                        {`Шаг ${stepNumber}:`}
+                        <div style={{ width: "300px", overflowWrap: "break-word" }}>{item.step_descriptions[index]}</div>
+                     </li>
+                  ))}
+                  </div>
                </div>
             ))}
          </div>

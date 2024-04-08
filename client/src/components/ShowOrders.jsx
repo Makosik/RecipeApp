@@ -36,9 +36,15 @@ function ShowOrders() {
       }
    };
 
-   const handleAddOrder = async (dish_title, order_id, ingredient_id, description) => {
+   const handleAddOrder = async (dish_title, order_id, ingredient_id, description, step_numbers, step_descriptions) => {
       try {
-         const response = await axios.post(`/api/addOrder`, { "dish_title": dish_title, "ingredient_id": ingredient_id, "description": description });
+         const response = await axios.post(`/api/addOrder`, {
+            "dish_title": dish_title,
+            "ingredient_id": ingredient_id,
+            "description": description,
+            "step_numbers": step_numbers,
+            "step_descriptions": step_descriptions
+         });
          await handleDeleteOrder(order_id);
          fetchData();
          console.log('Заявка успешно добавлена:', response.data);
@@ -72,10 +78,9 @@ function ShowOrders() {
                         <div style={{ width: "300px", overflowWrap: "break-word" }}>{order.step_descriptions[index]}</div>
                      </li>
                   ))}
-
-               </div>
+                  </div>
                   <button type="button" onClick={() => handleDeleteOrder(order.order_id)}>Удалить заявку</button>
-                  <button type="button" onClick={() => handleAddOrder(order.dish_title, order.order_id, order.ingredient_id, order.description)}>Добавить заявку</button>
+                  <button type="button" onClick={() => handleAddOrder(order.dish_title, order.order_id, order.ingredient_id, order.description, order.step_numbers, order.step_descriptions)}>Добавить заявку</button>
                </div>
             ))}
          </div>

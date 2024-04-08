@@ -89,12 +89,34 @@ drop TABLE stepsForDishes CASCADE;
 SELECT * from stepsForDishes;
 
 
+CREATE TABLE photoForOrders (
+    id SERIAL PRIMARY KEY,
+    id_stepsDorOrders INTEGER REFERENCES stepsForOrders(step_id),
+    url VARCHAR(255) NOT NULL
+);
+
+drop TABLE photoForOrders CASCADE;
+
+SELECT * from photoForOrders;
 
 
+-- Триггер для обновления описания блюда
+CREATE OR REPLACE FUNCTION update_dish_description()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Обновляем описание блюда в таблице Dishes
+    UPDATE Dishes
+    SET description = OLD.description
+    WHERE title = OLD.dish_title;
 
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
-
-
+CREATE TRIGGER update_dish_description_trigger
+AFTER DELETE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION update_dish_description();
 
 
 
