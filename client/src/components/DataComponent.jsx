@@ -123,6 +123,7 @@ const DataComponent = () => {
                      </li>
                   ))}
                   </div>
+                  <br /><br />
                </div>
             ))}
          </div>

@@ -10,7 +10,7 @@ select * from ingredients;
 CREATE TABLE Dishes (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-	description VARCHAR(255)
+	order_id integer REFERENCES orders(id)
 );
 
 
@@ -31,16 +31,22 @@ select * from Dishes_Ingredients;
 
 SELECT
          Dishes.title AS dish_title,
-         ARRAY_AGG(Ingredients.title) AS ingredient_titles,
-         Dishes.description AS description
+         ARRAY_AGG(DISTINCT Ingredients.title) AS ingredient_titles,
+         orders.description AS description,
+         ARRAY_AGG(DISTINCT stepsForDishes.step_number) AS step_numbers,
+         ARRAY_AGG(DISTINCT stepsForDishes.step_description) AS step_descriptions
      FROM
-         Dishes
+         orders
+     JOIN
+	 	   dishes ON dishes.order_id = orders.id 
      JOIN
          Dishes_Ingredients ON Dishes.id = Dishes_Ingredients.dish_id
      JOIN
          Ingredients ON Ingredients.id = Dishes_Ingredients.ingredient_id
+     LEFT JOIN
+         stepsForDishes ON Dishes.id = stepsForDishes.dish_id
      GROUP BY
-         Dishes.title, Dishes.description
+         Dishes.title, orders.description
      ORDER BY
          MAX(Dishes_Ingredients.created_at_DI) DESC;
 
@@ -57,7 +63,8 @@ CREATE TABLE orders (
     dish_title VARCHAR(255) NOT NULL,
     ingredient_id INTEGER [],
     created_at TIMESTAMP NOT NULL DEFAULT now(),
-    description VARCHAR(255)
+    description VARCHAR(255),
+	is_deleted boolean DEFAULT false
 );
 
 drop TABLE orders CASCADE;
@@ -77,48 +84,16 @@ drop TABLE stepsForOrders CASCADE;
 SELECT * from stepsForOrders;
 
 
-CREATE TABLE stepsForDishes (
-    step_id SERIAL PRIMARY KEY,
-    dish_id INTEGER REFERENCES dishes(id),
-    step_number INTEGER NOT NULL,
-    step_description TEXT
-);
-
-drop TABLE stepsForDishes CASCADE;
-
-SELECT * from stepsForDishes;
-
-
-CREATE TABLE photoForOrders (
+CREATE TABLE photoForSteps (
     id SERIAL PRIMARY KEY,
-    id_stepsDorOrders INTEGER REFERENCES stepsForOrders(step_id),
-    url VARCHAR(255) NOT NULL
+    id_stepsForOrders INTEGER REFERENCES stepsForOrders(step_id),
+	name_img VARCHAR(255) NOT NULL,
+    path_img VARCHAR(255) NOT NULL
 );
 
-drop TABLE photoForOrders CASCADE;
+drop TABLE photoForSteps CASCADE;
 
-SELECT * from photoForOrders;
-
-
--- Триггер для обновления описания блюда
-CREATE OR REPLACE FUNCTION update_dish_description()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Обновляем описание блюда в таблице Dishes
-    UPDATE Dishes
-    SET description = OLD.description
-    WHERE title = OLD.dish_title;
-
-    RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_dish_description_trigger
-AFTER DELETE ON orders
-FOR EACH ROW
-EXECUTE FUNCTION update_dish_description();
-
-
+SELECT * from photoForSteps;
 
 
 

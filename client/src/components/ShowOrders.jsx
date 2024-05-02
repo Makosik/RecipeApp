@@ -43,7 +43,8 @@ function ShowOrders() {
             "ingredient_id": ingredient_id,
             "description": description,
             "step_numbers": step_numbers,
-            "step_descriptions": step_descriptions
+            "step_descriptions": step_descriptions,
+            "order_id":order_id
          });
          await handleDeleteOrder(order_id);
          fetchData();
