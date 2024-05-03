@@ -1,8 +1,6 @@
 class UploadController {
     async upload(req, res) {
       try {
-         console.log("its req.file")
-         console.log(req.file)
          if (req.file) {
             const filePath = req.file.path;
             console.log('Файл был загружен:', filePath);

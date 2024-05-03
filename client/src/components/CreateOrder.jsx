@@ -6,6 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import CookingStep from "./CookingStep";
 
+
 function AddDishForm() {
    const [title, setTitle] = useState('');
    const [ingredient, setIngredient] = useState('');
@@ -16,6 +17,10 @@ function AddDishForm() {
    const [stepNumber, setStepNumber] = useState(1);
    const [stepDescription, setStepDescription] = useState('');
    const dispatch = useDispatch();
+   const [uploadedFile, setUploadedFile] = useState(null);
+   const [selectedFile, setSelectedFile] = useState(null); // for upload
+   const [selectedFiles, setSelectedFiles] = useState([]); //for prewiew
+   const [images, setImages] = useState([]);
 
 
    useEffect(() => {
@@ -30,6 +35,7 @@ function AddDishForm() {
       };
       fetchIngredients();
    }, []);
+
 
    const handleDishInputChange = (e) => {
       setTitle(e.target.value);
@@ -64,18 +70,72 @@ function AddDishForm() {
    const handleAddStep = () => {
       const newStep = {
          step_number: stepNumber,
-         step_description: stepDescription
+         step_description: stepDescription,
+         photo: uploadedFile,
       };
       setSteps([...steps, newStep]);
       setStepNumber(stepNumber + 1);
       setStepDescription('');
+      setUploadedFile(null);
+      handleShowImages()
+      //handleUpload();
+      console.log(steps)
+   };
+
+   const formData = new FormData();
+
+   const handleSelectedFile = ()=>{
+      if (selectedFile) {
+         formData.append('photo', selectedFile);
+         setSelectedFile(null);
+      } else {
+         alert('Выберите файл для загрузки');
+      }
+   }
+  
+   const handleUpload = async () => {
+      try {
+         const response = await axios.post('/api/upload', formData);
+         if (response.status === 200) {
+            const filePath = response.data.filePath;
+            console.log('Фотография успешно загружена:', filePath);
+            setUploadedFile(filePath);
+         } else {
+            console.error('Ошибка при загрузке фотографии:', response.statusText);
+         }
+      } catch (error) {
+         console.error('Ошибка при отправке запроса на загрузку фотографии:', error);
+      }
+   };
+
+   const handleFileChange = (event) => {
+      setSelectedFile(event.target.files[0]); // для загрузки
+      setSelectedFiles([...selectedFiles, ...event.target.files]); // Для хранения выбранного фото для просмотра
+   };
+
+   const handleShowImages = () => {
+      const newImages = [];
+      const promises = selectedFiles.map(file => {
+         return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+               newImages.push(reader.result);
+               resolve();
+            };
+            reader.readAsDataURL(file);
+         });
+      });
+
+      Promise.all(promises).then(() => {
+         setImages(newImages);
+      });
    };
 
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
          if (selectedIngredients.length > 0 && title.length > 0) {
-            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description:description, cookingSteps: steps});
+            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description: description, cookingSteps: steps });
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);
@@ -128,11 +188,18 @@ function AddDishForm() {
             </label>
             <br />
             <label>
-               <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription} />
+               <input
+                  type="file"
+                  accept='image/*,.png,.img,.gif,.web,'
+                  onChange={handleFileChange} />
+               <br />
+               <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription} images={images} />
                <div>
                   {steps.map((step, index) => (
                      <li key={index}>
                         {`Шаг ${step.step_number}:`}
+                        <br />
+                        {images[index] && <img src={images[index]} alt={`Изображение ${index + 1}`} width={300} height={200} />}
                         <div style={{ width: "300px", overflowWrap: "break-word" }}>{step.step_description}</div>
                      </li>
                   ))}
