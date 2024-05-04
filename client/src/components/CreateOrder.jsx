@@ -18,8 +18,8 @@ function AddDishForm() {
    const [stepDescription, setStepDescription] = useState('');
    const dispatch = useDispatch();
    const [uploadedFile, setUploadedFile] = useState(null);
-   const [selectedFile, setSelectedFile] = useState(null); // for upload
-
+   const [selectedFiles, setSelectedFiles] = useState([]); // for upload
+   const [lastSelectedFile, setLastSelectedFile] = useState(null);
 
    useEffect(() => {
       // Загрузка доступных ингредиентов из базы данных
@@ -67,30 +67,33 @@ function AddDishForm() {
 
    const formData = new FormData();
 
+   const handleFileChange = (event) => {
+   setLastSelectedFile(event.target.files[0]);
+   };
+
    const handleAddStep = () => {
-      if (selectedFile) {
-         const imageURL = URL.createObjectURL(selectedFile);
-         const newStep = {
-           step_number: stepNumber,
-           step_description: stepDescription,
-           tempPhoto: imageURL,
-         };
+   if (lastSelectedFile) {
+      const newStep = {
+         step_number: stepNumber,
+         step_description: stepDescription,
+         tempPhoto: URL.createObjectURL(lastSelectedFile), // Создание URL для отображения изображения
+      };
       setSteps([...steps, newStep]);
       setStepNumber(stepNumber + 1);
       setStepDescription('');
       setUploadedFile(null);
-      // setSelectedFile(null);
-      //handleUpload();
-      console.log(steps)
-      console.log(selectedFile)
-      //console.log(imageURL)
-      }
+      setSelectedFiles([...selectedFiles, lastSelectedFile]); // Добавление последнего выбранного файла к общему списку файлов
+      setLastSelectedFile(null); // Сброс последнего выбранного файла
+   } else {
+      console.log('Error! File was not selected');
+   }
    };
-  
+
    const handleUpload = async () => {
-      if (selectedFile) {
-         formData.append('photo', selectedFile);
-         setSelectedFile(null);
+      if (selectedFiles) {
+         selectedFiles.forEach((file, index) => {
+            formData.append(`photo`, file); // Присваиваем каждому файлу уникальный ключ
+          });
       } else {
          alert('Выберите файл для загрузки');
       }
@@ -98,7 +101,7 @@ function AddDishForm() {
          const response = await axios.post('/api/upload', formData);
          if (response.status === 200) {
             const filePath = response.data.filePath;
-            console.log('Фотография успешно загружена:', filePath);
+            console.log('Фотографии успешно загружены:', filePath);
             setUploadedFile(filePath);
          } else {
             console.error('Ошибка при загрузке фотографии:', response.statusText);
@@ -106,10 +109,6 @@ function AddDishForm() {
       } catch (error) {
          console.error('Ошибка при отправке запроса на загрузку фотографии:', error);
       }
-   };
-
-   const handleFileChange = (event) => {
-      setSelectedFile(event.target.files[0]); // для загрузки
    };
 
    const handleSubmit = async (e) => {
@@ -125,7 +124,8 @@ function AddDishForm() {
             setDescription('');
             setTitle('');
             setSteps([]);
-            setStepNumber(1)
+            setStepNumber(1);
+            setSelectedFiles([]);
             alert('Блюдо успешно добавлено в заявку!');
          } else {
             alert('Нельзя добавить блюдо без ингредиентов или без названия!');

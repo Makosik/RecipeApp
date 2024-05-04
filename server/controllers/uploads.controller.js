@@ -1,18 +1,25 @@
 class UploadController {
-    async upload(req, res) {
+   async upload(req, res) {
       try {
-         if (req.file) {
-            const filePath = req.file.path;
+        if (req.files) {
+          const uploadedFilesPaths = [];
+          for (const key in req.files) {
+            const file = req.files[key];
+            const filePath = file.path;
+            uploadedFilesPaths.push(filePath);
             console.log('Файл был загружен:', filePath);
-            res.json({ filePath });
-         } else {
-            res.status(400).json({ error: 'Файл не был загружен' });
-         }
+          }
+          console.log(uploadedFilesPaths)
+          res.json({ filePath: uploadedFilesPaths });
+        } else {
+          res.status(400).json({ error: 'Файлы не были загружены' });
+        }
       } catch (error) {
-         console.error('Ошибка при загрузке файла:', error);
-         res.status(500).json({ error: 'Ошибка при загрузке файла' });
+        console.error('Ошибка при загрузке файлов:', error);
+        res.status(500).json({ error: 'Ошибка при загрузке файлов' });
       }
-   }
+    }
+    
 }
 
 module.exports = new UploadController();
