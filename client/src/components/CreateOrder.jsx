@@ -19,8 +19,6 @@ function AddDishForm() {
    const dispatch = useDispatch();
    const [uploadedFile, setUploadedFile] = useState(null);
    const [selectedFile, setSelectedFile] = useState(null); // for upload
-   const [selectedFiles, setSelectedFiles] = useState([]); //for prewiew
-   const [images, setImages] = useState([]);
 
 
    useEffect(() => {
@@ -67,33 +65,35 @@ function AddDishForm() {
       setDescription(e.target.value)
    };
 
+   const formData = new FormData();
+
    const handleAddStep = () => {
-      const newStep = {
-         step_number: stepNumber,
-         step_description: stepDescription,
-         photo: uploadedFile,
-      };
+      if (selectedFile) {
+         const imageURL = URL.createObjectURL(selectedFile);
+         const newStep = {
+           step_number: stepNumber,
+           step_description: stepDescription,
+           tempPhoto: imageURL,
+         };
       setSteps([...steps, newStep]);
       setStepNumber(stepNumber + 1);
       setStepDescription('');
       setUploadedFile(null);
-      handleShowImages()
+      // setSelectedFile(null);
       //handleUpload();
       console.log(steps)
+      console.log(selectedFile)
+      //console.log(imageURL)
+      }
    };
-
-   const formData = new FormData();
-
-   const handleSelectedFile = ()=>{
+  
+   const handleUpload = async () => {
       if (selectedFile) {
          formData.append('photo', selectedFile);
          setSelectedFile(null);
       } else {
          alert('Выберите файл для загрузки');
       }
-   }
-  
-   const handleUpload = async () => {
       try {
          const response = await axios.post('/api/upload', formData);
          if (response.status === 200) {
@@ -110,31 +110,14 @@ function AddDishForm() {
 
    const handleFileChange = (event) => {
       setSelectedFile(event.target.files[0]); // для загрузки
-      setSelectedFiles([...selectedFiles, ...event.target.files]); // Для хранения выбранного фото для просмотра
-   };
-
-   const handleShowImages = () => {
-      const newImages = [];
-      const promises = selectedFiles.map(file => {
-         return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-               newImages.push(reader.result);
-               resolve();
-            };
-            reader.readAsDataURL(file);
-         });
-      });
-
-      Promise.all(promises).then(() => {
-         setImages(newImages);
-      });
    };
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+      await handleUpload();
       try {
          if (selectedIngredients.length > 0 && title.length > 0) {
+            
             await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description: description, cookingSteps: steps });
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
@@ -193,13 +176,13 @@ function AddDishForm() {
                   accept='image/*,.png,.img,.gif,.web,'
                   onChange={handleFileChange} />
                <br />
-               <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription} images={images} />
+               <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription}  />
                <div>
                   {steps.map((step, index) => (
                      <li key={index}>
                         {`Шаг ${step.step_number}:`}
                         <br />
-                        {images[index] && <img src={images[index]} alt={`Изображение ${index + 1}`} width={300} height={200} />}
+                        {step.tempPhoto && <img src={step.tempPhoto} alt={`Выбранное изображение`} width={300} height={200} />}
                         <div style={{ width: "300px", overflowWrap: "break-word" }}>{step.step_description}</div>
                      </li>
                   ))}

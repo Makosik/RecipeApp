@@ -52,11 +52,6 @@ class DishesController {
       }
    }
    
-
-   async createSteps(res,req){
-      
-   }
-
    async getOrders(req, res) {
       const orders = await db.query(
          `SELECT
