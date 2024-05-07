@@ -36,14 +36,11 @@ function ShowOrders() {
       }
    };
 
-   const handleAddOrder = async (dish_title, order_id, ingredient_id, description, step_numbers, step_descriptions) => {
+   const handleAddOrder = async (dish_title, order_id, ingredient_id, ) => {
       try {
          const response = await axios.post(`/api/addOrder`, {
             "dish_title": dish_title,
             "ingredient_id": ingredient_id,
-            "description": description,
-            "step_numbers": step_numbers,
-            "step_descriptions": step_descriptions,
             "order_id":order_id
          });
          await handleDeleteOrder(order_id);
@@ -76,6 +73,8 @@ function ShowOrders() {
                   {order.step_numbers.map((stepNumber, index) => (
                      <li key={index}>
                         {`Шаг ${stepNumber}:`}
+                        <br />
+                        <img src={order.file_path[index]} alt="Фото шага" width={300} height={200} />
                         <div style={{ width: "300px", overflowWrap: "break-word" }}>{order.step_descriptions[index]}</div>
                      </li>
                   ))}

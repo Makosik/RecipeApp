@@ -19,7 +19,7 @@ drop table Dishes CASCADE;
 select * from Dishes;
 
 CREATE TABLE Dishes_Ingredients (
-    dish_id INTEGER REFERENCES Dishes(id),
+    dish_id INTEGER REFERENCES Dishes(id) ON DELETE CASCADE,
     ingredient_id INTEGER REFERENCES Ingredients(id),
     created_at_DI TIMESTAMP DEFAULT now(),
     PRIMARY KEY (dish_id, ingredient_id)
@@ -86,20 +86,6 @@ CREATE TABLE stepsForOrders (
 drop TABLE stepsForOrders CASCADE;
 
 SELECT * from stepsForOrders;
-
-
--- CREATE TABLE photoForSteps (
---     id SERIAL PRIMARY KEY,
---     id_stepsForOrders INTEGER REFERENCES stepsForOrders(step_id),
---     path_img VARCHAR(255) NOT NULL
--- );
-
--- drop TABLE photoForSteps CASCADE;
-
--- SELECT * from photoForSteps;
-
-
-
 
 
 

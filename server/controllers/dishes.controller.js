@@ -6,11 +6,13 @@ class DishesController {
 
       const dishes = await db.query(
          `SELECT
+         Dishes.id AS dish_id,
          Dishes.title AS dish_title,
          ARRAY_AGG(DISTINCT Ingredients.title) AS ingredient_titles,
          orders.description AS description,
          ARRAY_AGG(DISTINCT stepsForOrders.step_number) AS step_numbers,
-         ARRAY_AGG(DISTINCT stepsForOrders.step_description) AS step_descriptions
+         ARRAY_AGG(DISTINCT stepsForOrders.step_description) AS step_descriptions,
+         ARRAY_AGG(DISTINCT stepsForOrders.file_path) AS file_path
      FROM
          orders
      JOIN
@@ -22,7 +24,7 @@ class DishesController {
      LEFT JOIN
          stepsForOrders ON Dishes.order_id = stepsForOrders.order_id
      GROUP BY
-         Dishes.title, orders.description
+      Dishes.id, Dishes.title, orders.description
      ORDER BY
          MAX(Dishes_Ingredients.created_at_DI) DESC;
      `)
@@ -32,6 +34,17 @@ class DishesController {
    async getIngredients(req, res) {
       const ingredients = await db.query(`select * from Ingredients;`)
       res.json(ingredients.rows);
+   }
+
+   async deleteDish(req, res) {
+      try {
+         const { dish_id } = req.params;
+         await db.query('DELETE from dishes where id = $1', [dish_id]);
+         res.json({ success: true, message: 'Рецепт успешно удален' });
+      } catch (error) {
+         console.error('Ошибка при удалении рецепта:', error);
+         res.status(500).json({ error: 'Ошибка при удалении рецепта' });
+      }
    }
 
    async createDish(req, res) {

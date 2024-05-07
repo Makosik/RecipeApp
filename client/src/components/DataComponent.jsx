@@ -84,6 +84,16 @@ const DataComponent = () => {
       setTimeout(timerId);
    };
 
+   const handleDeleteDish = async (dish_id) =>{
+      try {
+         const response = await axios.delete(`/api/dishes/${dish_id}`);
+         fetchData();
+         console.log('Рецепт успешно удален:', response.data);
+      } catch (error) {
+         console.error('Ошибка при удалении рецепта:', error);
+      }
+   }
+
 
    return (
       <div>
@@ -119,10 +129,13 @@ const DataComponent = () => {
                   {item.step_numbers.map((stepNumber, index) => (
                      <li key={index}>
                         {`Шаг ${stepNumber}:`}
+                        <br />
+                        <img src={item.file_path[index]} alt="Фото шага" width={300} height={200} />
                         <div style={{ width: "300px", overflowWrap: "break-word" }}>{item.step_descriptions[index]}</div>
                      </li>
                   ))}
                   </div>
+                  <button type="button" onClick={() => handleDeleteDish(item.dish_id)}>Удалить рецепт</button>
                   <br /><br />
                </div>
             ))}
