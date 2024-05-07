@@ -35,15 +35,17 @@ class DishesController {
    }
 
    async createDish(req, res) {
-      const { dish_title, ingredient_id, description, cookingSteps } = req.body;
+      const { dish_title, ingredient_id, description, cookingSteps, uploadedFilesPaths } = req.body;
+      console.log('photoUplload: ',uploadedFilesPaths)
       try {
          const result = await db.query('INSERT INTO orders (dish_title, ingredient_id, description) VALUES ($1, $2, $3) RETURNING id', [dish_title, ingredient_id, description]);
          const orderId = result.rows[0].id; // Получаем id вставленной записи
-   
-         // Вставляем информацию о каждом шаге
-         for (const step of cookingSteps) {
-            await db.query('INSERT INTO stepsForOrders (order_id, step_number, step_description) VALUES ($1, $2, $3)', [orderId, step.step_number, step.step_description]);
-         }
+         
+         for (const [index, step] of cookingSteps.entries()) {
+            const stepData = [orderId, step.step_number, step.step_description, uploadedFilesPaths[index]];
+            console.log('stepData: ',stepData)
+            await db.query('INSERT INTO stepsForOrders (order_id, step_number, step_description, file_path) VALUES ($1, $2, $3, $4)', stepData);
+        }
    
          res.status(201).json({ message: 'Блюдо успешно создано' });
       } catch (error) {
@@ -51,13 +53,6 @@ class DishesController {
          res.status(500).json({ error: 'Ошибка при создании блюда' });
       }
    }
-   
-   
-
 
 }
-
-
-
-
 module.exports = new DishesController();

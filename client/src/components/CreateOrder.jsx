@@ -17,7 +17,6 @@ function AddDishForm() {
    const [stepNumber, setStepNumber] = useState(1);
    const [stepDescription, setStepDescription] = useState('');
    const dispatch = useDispatch();
-   const [uploadedFile, setUploadedFile] = useState(null);
    const [selectedFiles, setSelectedFiles] = useState([]); // for upload
    const [lastSelectedFile, setLastSelectedFile] = useState(null);
 
@@ -81,7 +80,7 @@ function AddDishForm() {
       setSteps([...steps, newStep]);
       setStepNumber(stepNumber + 1);
       setStepDescription('');
-      setUploadedFile(null);
+     
       setSelectedFiles([...selectedFiles, lastSelectedFile]); // Добавление последнего выбранного файла к общему списку файлов
       setLastSelectedFile(null); // Сброс последнего выбранного файла
    } else {
@@ -102,7 +101,8 @@ function AddDishForm() {
          if (response.status === 200) {
             const filePath = response.data.filePath;
             console.log('Фотографии успешно загружены:', filePath);
-            setUploadedFile(filePath);
+            //setUploadedFile(filePath);
+            return filePath;
          } else {
             console.error('Ошибка при загрузке фотографии:', response.statusText);
          }
@@ -113,11 +113,18 @@ function AddDishForm() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
-      await handleUpload();
       try {
+        
          if (selectedIngredients.length > 0 && title.length > 0) {
-            
-            await axios.post('/api/createDish', { dish_title: title, ingredient_id: selectedIngredients.map(ingredient => ingredient.id), description: description, cookingSteps: steps });
+            const uploadedFilePath = await handleUpload();
+            console.log('uploadedFilesPaths:', uploadedFilePath);
+            await axios.post('/api/createDish', {
+               dish_title: title,
+               ingredient_id: selectedIngredients.map(ingredient => ingredient.id),
+               description: description,
+               cookingSteps: steps,
+               uploadedFilesPaths: uploadedFilePath,
+               });
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);

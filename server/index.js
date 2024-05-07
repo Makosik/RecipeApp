@@ -9,7 +9,6 @@ app.use(express.json())
 app.use('/api', dishesRouter);
 app.use('/api', uploadRouter);
 app.use('/api', ordersRouter);
-
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))) 
 
 

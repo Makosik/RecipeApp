@@ -54,9 +54,12 @@ SELECT
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     user_name VARCHAR(255) NOT NULL,
-	mail VARCHAR(255) NOT NULL,
-	user_password VARCHAR(255) NOT NULL
+	mail VARCHAR(255) UNIQUE NOT NULL,
+	user_password VARCHAR(255) NOT NULL,
+	is_admin boolean DEFAULT false
 );
+
+drop table users CASCADE;
 
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
@@ -76,7 +79,8 @@ CREATE TABLE stepsForOrders (
     step_id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES orders(id),
     step_number INTEGER NOT NULL,
-    step_description TEXT
+    step_description TEXT,
+	file_path VARCHAR(255) NOT NULL
 );
 
 drop TABLE stepsForOrders CASCADE;
@@ -84,16 +88,15 @@ drop TABLE stepsForOrders CASCADE;
 SELECT * from stepsForOrders;
 
 
-CREATE TABLE photoForSteps (
-    id SERIAL PRIMARY KEY,
-    id_stepsForOrders INTEGER REFERENCES stepsForOrders(step_id),
-	name_img VARCHAR(255) NOT NULL,
-    path_img VARCHAR(255) NOT NULL
-);
+-- CREATE TABLE photoForSteps (
+--     id SERIAL PRIMARY KEY,
+--     id_stepsForOrders INTEGER REFERENCES stepsForOrders(step_id),
+--     path_img VARCHAR(255) NOT NULL
+-- );
 
-drop TABLE photoForSteps CASCADE;
+-- drop TABLE photoForSteps CASCADE;
 
-SELECT * from photoForSteps;
+-- SELECT * from photoForSteps;
 
 
 
