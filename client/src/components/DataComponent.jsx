@@ -3,6 +3,7 @@ import Search from "./Search";
 import axios from 'axios';
 import { setDishes } from '../redux/dishesSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import Navigation from './Navigation';
 
 const DataComponent = () => {
    const dispatch = useDispatch();
@@ -97,6 +98,7 @@ const DataComponent = () => {
 
    return (
       <div>
+      <Navigation/>
          <div style={{ width: "600px" }}>
             <Search
                searchValue={search}
@@ -117,7 +119,7 @@ const DataComponent = () => {
          <button onClick={() => handleReturnDishes()}>Вернуться к рецептам</button>
          <p style={{ display: isblock ? 'block' : 'none' }}>Результаты поиска: {resultSearching}</p>
          <div>
-            {searchResult.map(item => (
+            {searchResult.map((item) => (
                <div key={item.id}>{item.dish_title}
                   <ul>
                      {item.ingredient_titles.map(ingr => (

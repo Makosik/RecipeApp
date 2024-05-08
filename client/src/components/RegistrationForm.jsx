@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 function RegistrationForm() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
       user_name: "",
       mail: "",
@@ -18,8 +20,8 @@ function RegistrationForm() {
         e.preventDefault();
         try {
             const response = await axios.post("/api/auth/register",formData);
+            navigate('/recipes')
             console.log('Пользователь успешно зарегистрирован:', response);
-   
         } catch (error) {
             console.error('Ошибка при регистрации пользователя:', error.message);
 
@@ -43,6 +45,9 @@ function RegistrationForm() {
                     <input type="password" name="user_password" value={formData.user_password} onChange={handleChange} />
                 </div>
                 <button type="submit">Зарегистрироваться</button>
+                <br />
+                <p>Есть аккаунт?</p>
+                <Link to="/login">Войти</Link>
             </form>
         </div>
     );

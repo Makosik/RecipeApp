@@ -4,17 +4,21 @@ import AddDishForm from './components/CreateOrder';
 import ShowOrders from './components/ShowOrders';
 import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/LoginForm';
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
    return (
-      <>
-         {/* <AddDishForm />
-         <ShowOrders />
-         <DataComponent /> 
-         <RegistrationForm/> */}
-         <LoginForm/>
-      </>
+      <Router>
+            <Routes>
+               <Route path="/login" element={<LoginForm />} />
+               <Route path="/register" element={<RegistrationForm />} />
+               <Route path="/recipes" element={<DataComponent />} />
+               <Route path="/create-recipe" element={<AddDishForm />} />
+               <Route path="/show-orders" element={<ShowOrders />} />
+               <Route path="*" element={<DataComponent />} />
+            
+            </Routes>
+        </Router>
    )
 }
 
