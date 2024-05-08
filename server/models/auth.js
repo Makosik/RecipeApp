@@ -28,7 +28,31 @@ async function login(loginData) {
    return { message: 'Authentication successful', token };
 }
 
+async function createAdmin() {
+   const adminData = {
+       user_name: 'admin',
+       mail: 'admin@mail.com',
+       user_password: await bcrypt.hash('admin', 10), 
+       is_admin: true
+   };
+
+   try {
+       const existingAdmin = await db.query('SELECT * FROM users WHERE is_admin = $1 LIMIT 1', [true]);
+       
+       if (existingAdmin.rows.length === 0 ) {
+           const admin = await db.query(
+            'INSERT INTO users (user_name, mail, user_password, is_admin) VALUES ($1, $2, $3, $4) RETURNING *',
+            [adminData.user_name, adminData.mail, adminData.user_password, adminData.is_admin]
+         );
+           console.log('Администратор успешно создан');
+       }
+   } catch (error) {
+       console.error('Ошибка при создании администратора:', error);
+   }
+}
+
 module.exports = {
    register,
    login,
+   createAdmin,
 };
