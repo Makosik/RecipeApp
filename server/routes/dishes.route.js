@@ -10,4 +10,3 @@ router.delete("/dishes/:dish_id", dishesController.deleteDish);
 
 
 module.exports = router;
-

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { setOrders } from '../redux/ordersSlice';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import CookingStep from "./CookingStep";
+import Navigation from './Navigation';
 
 
 function AddDishForm() {
@@ -19,6 +21,7 @@ function AddDishForm() {
    const dispatch = useDispatch();
    const [selectedFiles, setSelectedFiles] = useState([]); // for upload
    const [lastSelectedFile, setLastSelectedFile] = useState(null);
+   const navigate = useNavigate();
 
    useEffect(() => {
       // Загрузка доступных ингредиентов из базы данных
@@ -67,32 +70,32 @@ function AddDishForm() {
    const formData = new FormData();
 
    const handleFileChange = (event) => {
-   setLastSelectedFile(event.target.files[0]);
+      setLastSelectedFile(event.target.files[0]);
    };
 
    const handleAddStep = () => {
-   if (lastSelectedFile) {
-      const newStep = {
-         step_number: stepNumber,
-         step_description: stepDescription,
-         tempPhoto: URL.createObjectURL(lastSelectedFile), // Создание URL для отображения изображения
-      };
-      setSteps([...steps, newStep]);
-      setStepNumber(stepNumber + 1);
-      setStepDescription('');
-     
-      setSelectedFiles([...selectedFiles, lastSelectedFile]); // Добавление последнего выбранного файла к общему списку файлов
-      setLastSelectedFile(null); // Сброс последнего выбранного файла
-   } else {
-      console.log('Error! File was not selected');
-   }
+      if (lastSelectedFile) {
+         const newStep = {
+            step_number: stepNumber,
+            step_description: stepDescription,
+            tempPhoto: URL.createObjectURL(lastSelectedFile), // Создание URL для отображения изображения
+         };
+         setSteps([...steps, newStep]);
+         setStepNumber(stepNumber + 1);
+         setStepDescription('');
+
+         setSelectedFiles([...selectedFiles, lastSelectedFile]); // Добавление последнего выбранного файла к общему списку файлов
+         setLastSelectedFile(null); // Сброс последнего выбранного файла
+      } else {
+         console.log('Error! File was not selected');
+      }
    };
 
    const handleUpload = async () => {
       if (selectedFiles) {
          selectedFiles.forEach((file, index) => {
             formData.append(`photo`, file); // Присваиваем каждому файлу уникальный ключ
-          });
+         });
       } else {
          alert('Выберите файл для загрузки');
       }
@@ -114,7 +117,7 @@ function AddDishForm() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        
+
          if (selectedIngredients.length > 0 && title.length > 0) {
             const uploadedFilePath = await handleUpload();
             console.log('uploadedFilesPaths:', uploadedFilePath);
@@ -124,7 +127,8 @@ function AddDishForm() {
                description: description,
                cookingSteps: steps,
                uploadedFilesPaths: uploadedFilePath,
-               });
+            });
+            
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
             dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
             setSelectedIngredients([]);
@@ -134,6 +138,7 @@ function AddDishForm() {
             setStepNumber(1);
             setSelectedFiles([]);
             alert('Блюдо успешно добавлено в заявку!');
+            navigate('/');
          } else {
             alert('Нельзя добавить блюдо без ингредиентов или без названия!');
          }
@@ -145,6 +150,7 @@ function AddDishForm() {
 
    return (
       <div>
+      <Navigation/>
          <h2>Добавить блюдо</h2>
          <form onSubmit={handleSubmit}>
             <label>
@@ -183,7 +189,7 @@ function AddDishForm() {
                   accept='image/*,.png,.img,.gif,.web,'
                   onChange={handleFileChange} />
                <br />
-               <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription}  />
+               <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription} />
                <div>
                   {steps.map((step, index) => (
                      <li key={index}>

@@ -11,9 +11,7 @@ function RegistrationForm() {
     });
 
     const handleChange = (e) => {
-      console.log(e.target.name)
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        console.log(formData)
     };
 
     const handleSubmit = async (e) => {

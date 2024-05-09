@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOrders } from '../redux/ordersSlice';
 import { setDishes } from '../redux/dishesSlice';
+import Navigation from './Navigation';
 
 function ShowOrders() {
    const dispatch = useDispatch();
@@ -56,6 +57,7 @@ function ShowOrders() {
 
    return (
       <div>
+      <Navigation/>
          <h1>Заявки:</h1>
          <div>
             {orders.map(order => (
