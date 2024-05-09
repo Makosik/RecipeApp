@@ -7,8 +7,9 @@ import Navigation from './Navigation';
 
 function ShowOrders() {
    const dispatch = useDispatch();
+   const userId = useSelector(state => state.auth.userId)
    const orders = useSelector(state => state.orders.orders);
-
+console.log(orders)
    useEffect(() => {
       fetchData();
    }, []);
@@ -42,7 +43,8 @@ function ShowOrders() {
          const response = await axios.post(`/api/addOrder`, {
             "dish_title": dish_title,
             "ingredient_id": ingredient_id,
-            "order_id":order_id
+            "order_id":order_id,
+            "user_id": userId
          });
          await handleDeleteOrder(order_id);
          fetchData();
@@ -59,10 +61,12 @@ function ShowOrders() {
       <div>
       <Navigation/>
          <h1>Заявки:</h1>
+         
          <div>
             {orders.map(order => (
                <div key={order.order_id}>
                   <div>Заявка номер: {order.order_id}</div>
+                  <div>user_id: {order.user_id}</div>
                   <div>Дата заявки: {order.created_at}</div>
                   <div>Название блюда: {order.dish_title}</div>
                   <ul>

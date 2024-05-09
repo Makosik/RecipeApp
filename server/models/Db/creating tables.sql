@@ -11,7 +11,8 @@ select * from ingredients;
 CREATE TABLE Dishes (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-	order_id integer REFERENCES orders(id)
+	order_id integer REFERENCES orders(id),
+	user_id integer REFERENCES users(id)
 );
 
 
@@ -51,7 +52,8 @@ CREATE TABLE orders (
     ingredient_id INTEGER [],
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     description VARCHAR(255),
-	is_deleted boolean DEFAULT false
+	is_deleted boolean DEFAULT false,
+	user_id INTEGER  REFERENCES users(id)
 );
 
 drop TABLE orders CASCADE;
@@ -71,6 +73,12 @@ drop TABLE stepsForOrders CASCADE;
 
 SELECT * from stepsForOrders;
 
+
+CREATE TABLE favorites (
+    user_id INTEGER REFERENCES users(id),
+    dish_id INTEGER REFERENCES Dishes(id),
+    PRIMARY KEY (user_id, dish_id)
+);
 
 
 

@@ -4,6 +4,7 @@ const getOrders =  async () => {
    const orders = await db.query(
       `SELECT
       o.id AS order_id,
+      o.user_id as user_id,
       o.dish_title,
       o.description AS order_description,
       TO_CHAR(o.created_at, 'DD.MM.YYYY HH24:MI') AS created_at,
@@ -24,7 +25,7 @@ const getOrders =  async () => {
       WHERE s.order_id = o.id
   ) s ON true
   WHERE o.is_deleted = FALSE
-  GROUP BY o.id, o.dish_title, o.description, created_at
+  GROUP BY o.id, o.user_id, o.dish_title, o.description, created_at
   ORDER BY o.id;
   `)
   return orders;
@@ -37,8 +38,8 @@ const deleteOrder = async (order) => {
 }
 
 const addOrder = async (order) => {
-      const { dish_title, ingredient_id, order_id } = order;
-      const dishResult = await db.query('INSERT INTO Dishes (title, order_id) VALUES ($1, $2) RETURNING id', [dish_title, order_id]);
+      const { dish_title, ingredient_id, order_id, user_id } = order;
+      const dishResult = await db.query('INSERT INTO Dishes (title, order_id, user_id) VALUES ($1, $2, $3) RETURNING id', [dish_title, order_id, user_id]);
       const dish_id = dishResult.rows[0].id;
       const insertIngredients = ingredient_id.map(ingredient_id => {
          return db.query('INSERT INTO Dishes_Ingredients (dish_id, ingredient_id) VALUES ($1, $2)', [dish_id, ingredient_id]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setOrders } from '../redux/ordersSlice';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -19,6 +19,7 @@ function AddDishForm() {
    const [stepNumber, setStepNumber] = useState(1);
    const [stepDescription, setStepDescription] = useState('');
    const dispatch = useDispatch();
+   const userId = useSelector(state => state.auth.userId)
    const [selectedFiles, setSelectedFiles] = useState([]); // for upload
    const [lastSelectedFile, setLastSelectedFile] = useState(null);
    const navigate = useNavigate();
@@ -127,6 +128,7 @@ function AddDishForm() {
                description: description,
                cookingSteps: steps,
                uploadedFilesPaths: uploadedFilePath,
+               userId: userId
             });
             
             const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
