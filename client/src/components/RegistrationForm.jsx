@@ -1,9 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../redux/authSlice';
 
 function RegistrationForm() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({
       user_name: "",
       mail: "",
@@ -18,6 +21,10 @@ function RegistrationForm() {
         e.preventDefault();
         try {
             const response = await axios.post("/api/auth/register",formData);
+            const loginResponse = await axios.post("/api/auth/login", formData);
+            localStorage.setItem('token', loginResponse.data.token);
+            const { userId, userName, email, isAdmin } = loginResponse.data;
+            dispatch(login({ userId, userName, email, isAdmin }));
             navigate('/recipes')
             console.log('Пользователь успешно зарегистрирован:', response);
         } catch (error) {
