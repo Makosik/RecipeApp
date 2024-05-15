@@ -44,13 +44,17 @@ const deleteDish = async (dish) => {
 const createDish = async (dish) => {
    const { dish_title, ingredient_id, description, cookingSteps, uploadedFilesPaths, userId } = dish;
    console.log('photoUplload: ', uploadedFilesPaths)
-   const result = await db.query('INSERT INTO orders (dish_title, ingredient_id, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id', [dish_title, ingredient_id, description, userId]);
+   const result = await db.query(
+      'INSERT INTO orders (dish_title, ingredient_id, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id',
+      [dish_title, ingredient_id, description, userId]);
    const orderId = result.rows[0].id;
 
    for (const [index, step] of cookingSteps.entries()) {
       const stepData = [orderId, step.step_number, step.step_description, uploadedFilesPaths[index]];
       console.log('stepData: ', stepData)
-      await db.query('INSERT INTO stepsForOrders (order_id, step_number, step_description, file_path) VALUES ($1, $2, $3, $4)', stepData);
+      await db.query(
+         'INSERT INTO stepsForOrders (order_id, step_number, step_description, file_path) VALUES ($1, $2, $3, $4)',
+         stepData);
    }
 
 }

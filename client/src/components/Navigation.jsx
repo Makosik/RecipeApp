@@ -5,7 +5,7 @@ import LogoutButton from './LogoutButton';
 
 function Navigation() {
    const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-
+   const isAdmin = useSelector(state => state.auth.isAdmin);
     return (
         <nav>
             <ul>
@@ -18,9 +18,9 @@ function Navigation() {
                 <li>
                    <Link to="/create-recipe"><button>Добавить рецепт</button></Link>
                 </li>
-                <li>
-                   <Link to="/show-orders"><button>Заявки</button></Link>
-                </li>
+                {isAdmin && <li>
+                <Link to="/show-orders"><button>Заявки</button></Link>
+                </li>}
                 <li>
                 {isLoggedIn ? <LogoutButton/> : <Link to="/login"><button>Вход</button></Link>}
                 </li>

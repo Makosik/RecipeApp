@@ -7,7 +7,7 @@ export const authSlice = createSlice({
       userId: null,
       userName: null,
       email: null,
-      isAdmin: null,
+      isAdmin: false,
    },
    reducers: {
       login: (state, action) => {
@@ -22,7 +22,7 @@ export const authSlice = createSlice({
          state.userId = null;
          state.userName = null;
          state.email = null;
-         state.isAdmin = null;
+         state.isAdmin = false;
       },
    },
 });

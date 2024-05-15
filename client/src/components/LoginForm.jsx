@@ -26,7 +26,7 @@ function LoginForm() {
          const decodedToken = jwtDecode(response.data.token);
          navigate('/recipes');
          dispatch(login(decodedToken));
-         console.log('Пользователь успешно аутентифицирован:', response);
+         console.log('Пользователь успешно аутентифицирован:', decodedToken);
       } catch (error) {
          console.error('Ошибка при аутентификации пользователя:', error.message);
       }
