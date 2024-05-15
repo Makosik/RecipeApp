@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import DataComponent from './components/DataComponent';
 import AddDishForm from './components/CreateOrder';
 import ShowOrders from './components/ShowOrders';
 import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/LoginForm';
+import ProtectedRouteUser from './components/ProtectedRouteUser';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
 import { login } from './redux/authSlice';
+import ProtectedRouteAdmin from './components/ProtectedRouteAdmin';
 
 function App() {
    const dispatch = useDispatch();
@@ -20,19 +22,32 @@ function App() {
       }
    }, [dispatch]);
 
+   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+   const isAdmin = useSelector(state => state.auth.isAdmin);
 
    return (
       <Router>
-            <Routes>
-               <Route path="/login" element={<LoginForm />} />
-               <Route path="/register" element={<RegistrationForm />} />
-               <Route path="/recipes" element={<DataComponent />} />
-               <Route path="/create-recipe" element={<AddDishForm />} />
-               <Route path="/show-orders" element={<ShowOrders />} />
-               <Route path="*" element={<DataComponent />} />
-            
-            </Routes>
-        </Router>
+         <Routes>
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegistrationForm />} />
+            <Route path="/recipes" element={<DataComponent />} />
+            <Route path="/favorites" element={
+               <ProtectedRouteUser isLoggedIn={isLoggedIn}>
+                  <DataComponent />
+               </ProtectedRouteUser>} />
+            <Route path="/create-recipe" element={
+               <ProtectedRouteUser isLoggedIn={isLoggedIn}>
+                  <AddDishForm />
+               </ProtectedRouteUser>} />
+            <Route path="/show-orders" element={
+               <ProtectedRouteAdmin isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
+                  <ShowOrders />
+               </ProtectedRouteAdmin>
+            } />
+            <Route path="*" element={<DataComponent />} />
+
+         </Routes>
+      </Router>
    )
 }
 
