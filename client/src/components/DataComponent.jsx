@@ -85,15 +85,21 @@ const DataComponent = () => {
       setTimeout(timerId);
    };
 
-   const handleDeleteDish = async (dish_id) =>{
+   const handleDeleteDish = async (dish_id) => {
       try {
-         const response = await axios.delete(`/api/dishes/${dish_id}`);
-         fetchData();
-         console.log('Рецепт успешно удален:', response.data);
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        };
+        const response = await axios.delete(`/api/dishes/${dish_id}`, config);
+        fetchData();
+        console.log('Рецепт успешно удален:', response.data);
       } catch (error) {
-         console.error('Ошибка при удалении рецепта:', error);
+        console.error('Ошибка при удалении рецепта:', error.response.data.message);
       }
-   }
+    };
 
 
    return (
