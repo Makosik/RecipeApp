@@ -12,9 +12,12 @@ function Navigation() {
                 <li>
                     <Link to="/"><button>Рецепты</button></Link>
                 </li>
-                <li>
+                {!isAdmin && <li>
                   <Link to="/favorites"><button>Избранное</button></Link>
-                </li>
+                </li>}
+                {isAdmin && <li>
+                <Link to="/users"><button>Пользователи</button></Link>
+                </li>}
                 <li>
                    <Link to="/create-recipe"><button>Добавить рецепт</button></Link>
                 </li>

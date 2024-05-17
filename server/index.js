@@ -3,7 +3,8 @@ const dishesRouter = require('./routes/dishes.route')
 const uploadRouter = require('./routes/upload.route')
 const ordersRouter = require('./routes/orders.route')
 const favoriteRouter = require('./routes/favorites.route')
-const authRoutes = require('./routes/auth.route');
+const authRouter = require('./routes/auth.route');
+const usersRouter = require('./routes/users.route');
 const path = require('path')
 const {createAdmin} = require('./models/auth')
 
@@ -13,8 +14,9 @@ app.use('/api', dishesRouter);
 app.use('/api', uploadRouter);
 app.use('/api', ordersRouter);
 app.use('/api', favoriteRouter);
+app.use('/api', usersRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))) 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRouter);
 
 createAdmin();
 

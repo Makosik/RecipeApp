@@ -11,6 +11,7 @@ import { jwtDecode } from 'jwt-decode';
 import { login } from './redux/authSlice';
 import ProtectedRouteAdmin from './components/ProtectedRouteAdmin';
 import Favorite from './components/Favorite';
+import Users from './components/Users';
 
 function App() {
    const dispatch = useDispatch();
@@ -43,6 +44,11 @@ function App() {
             <Route path="/show-orders" element={
                <ProtectedRouteAdmin isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
                   <ShowOrders />
+               </ProtectedRouteAdmin>
+            } />
+            <Route path="/users" element={
+               <ProtectedRouteAdmin isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
+                  <Users/>
                </ProtectedRouteAdmin>
             } />
             <Route path="*" element={<DataComponent />} />
