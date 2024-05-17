@@ -122,7 +122,6 @@ function AddDishForm() {
          if (selectedIngredients.length > 0 && title.length > 0) {
             const uploadedFilePath = await handleUpload();
             console.log('uploadedFilesPaths:', uploadedFilePath);
-
             const token = localStorage.getItem('token');
             const config = {
                headers: {
@@ -137,9 +136,8 @@ function AddDishForm() {
                uploadedFilesPaths: uploadedFilePath,
                userId: userId
             }, config);
-
-            const updatedOrders = await axios.get('/api/orders', config); 
-            dispatch(setOrders(updatedOrders.data));
+            // const updatedOrders = await axios.get('/api/orders', config); 
+            // dispatch(setOrders(updatedOrders.data));
             setSelectedIngredients([]);
             setDescription('');
             setTitle('');

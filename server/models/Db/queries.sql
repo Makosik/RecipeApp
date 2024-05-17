@@ -29,7 +29,7 @@ CREATE TABLE orders (
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     description VARCHAR(255),
 	is_deleted boolean DEFAULT false,
-	user_id INTEGER  REFERENCES users(id)
+	user_id INTEGER  REFERENCES users(id) ON DELETE CASCADE
 );
 
 drop TABLE orders CASCADE;
@@ -77,7 +77,7 @@ SELECT * from stepsForOrders;
 
 CREATE TABLE favorites (
     user_id INTEGER REFERENCES users(id),
-    dish_id INTEGER REFERENCES Dishes(id),
+    dish_id INTEGER REFERENCES Dishes(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, dish_id)
 );
 
