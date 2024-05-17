@@ -122,6 +122,13 @@ function AddDishForm() {
          if (selectedIngredients.length > 0 && title.length > 0) {
             const uploadedFilePath = await handleUpload();
             console.log('uploadedFilesPaths:', uploadedFilePath);
+
+            const token = localStorage.getItem('token');
+            const config = {
+               headers: {
+                  'Authorization': `Bearer ${token}`
+               }
+            };
             await axios.post('/api/createDish', {
                dish_title: title,
                ingredient_id: selectedIngredients.map(ingredient => ingredient.id),
@@ -129,10 +136,10 @@ function AddDishForm() {
                cookingSteps: steps,
                uploadedFilesPaths: uploadedFilePath,
                userId: userId
-            });
-            
-            const updatedOrders = await axios.get('/api/orders'); // Обновленный список заказов
-            dispatch(setOrders(updatedOrders.data)); // Обновление данных о заказах в Redux
+            }, config);
+
+            const updatedOrders = await axios.get('/api/orders', config); 
+            dispatch(setOrders(updatedOrders.data));
             setSelectedIngredients([]);
             setDescription('');
             setTitle('');
@@ -145,14 +152,14 @@ function AddDishForm() {
             alert('Нельзя добавить блюдо без ингредиентов или без названия!');
          }
       } catch (error) {
-         console.error('Ошибка при добавлении блюда:', error);
+         console.error('Ошибка при добавлении блюда:', error.response.data.message);
          alert('Ошибка при добавлении блюда в заявку!');
       }
    };
 
    return (
       <div>
-      <Navigation/>
+         <Navigation />
          <h2>Добавить блюдо</h2>
          <form onSubmit={handleSubmit}>
             <label>

@@ -43,7 +43,6 @@ const deleteDish = async (dish) => {
 
 const createDish = async (dish) => {
    const { dish_title, ingredient_id, description, cookingSteps, uploadedFilesPaths, userId } = dish;
-   console.log('photoUplload: ', uploadedFilesPaths)
    const result = await db.query(
       'INSERT INTO orders (dish_title, ingredient_id, description, user_id) VALUES ($1, $2, $3, $4) RETURNING id',
       [dish_title, ingredient_id, description, userId]);

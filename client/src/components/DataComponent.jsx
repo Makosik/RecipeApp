@@ -20,6 +20,7 @@ const DataComponent = () => {
       try {
          const result = await axios.get('/api/dishes');
          dispatch(setDishes(result.data));
+         //console.log(result.data)
          setSearchResult(result.data);
       } catch (error) {
          console.error('Ошибка при получении блюд:', error);
@@ -101,6 +102,27 @@ const DataComponent = () => {
       }
     };
 
+    const handleAddFavorite = async (dish_id) => {
+      try {
+          const token = localStorage.getItem('token');
+          const config = {
+              headers: {
+                  'Authorization': `Bearer ${token}`
+              }
+          };
+          const response = await axios.post('/api/addFavorite', { dish_id }, config);
+          console.log('Рецепт успешно добавлен в избранное:', response.data);
+      } catch (error) {
+          console.error('Ошибка при добавлении рецепта в избранное:', error.response.data.message);
+      }
+  };
+
+    const randomNum = () => {
+      let num = Math.floor(Math.random() * 10000)
+      //console.log(num)
+      return num;
+    }
+
 
    return (
       <div>
@@ -117,7 +139,7 @@ const DataComponent = () => {
             />
             <div style={{ display: isSearchActive ? 'flex' : "none", flexDirection: "column" }}>
                {selectedDish.map(item => (
-                  <span onClick={() => handleAddSelectedSearch(item)} style={{ cursor: 'pointer', marginTop: '10px' }} key={item.id}  >{item.dish_title}</span>
+                  <span onClick={() => handleAddSelectedSearch(item)} style={{ cursor: 'pointer', marginTop: '10px' }} key={randomNum()}  >{item.dish_title}</span>
                ))}
             </div>
          </div>
@@ -126,10 +148,10 @@ const DataComponent = () => {
          <p style={{ display: isblock ? 'block' : 'none' }}>Результаты поиска: {resultSearching}</p>
          <div>
             {searchResult.map((item) => (
-               <div key={item.id}>{item.dish_title}
+               <div key={randomNum()}>{item.dish_title}
                   <ul>
                      {item.ingredient_titles.map(ingr => (
-                        <li key={item.id}>{ingr}</li>
+                        <li key={randomNum()}>{ingr}</li>
                      ))}
                   </ul>
                   <div>Описание: {item.description}</div>
@@ -144,6 +166,7 @@ const DataComponent = () => {
                   ))}
                   </div>
                   <button type="button" onClick={() => handleDeleteDish(item.dish_id)}>Удалить рецепт</button>
+                  <button type="button" onClick={() => handleAddFavorite(item.dish_id)}>Добавить в избранное</button>
                   <br /><br />
                </div>
             ))}

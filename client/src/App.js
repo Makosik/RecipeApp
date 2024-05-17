@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
 import { login } from './redux/authSlice';
 import ProtectedRouteAdmin from './components/ProtectedRouteAdmin';
+import Favorite from './components/Favorite';
 
 function App() {
    const dispatch = useDispatch();
@@ -33,7 +34,7 @@ function App() {
             <Route path="/recipes" element={<DataComponent />} />
             <Route path="/favorites" element={
                <ProtectedRouteUser isLoggedIn={isLoggedIn}>
-                  <DataComponent />
+                  <Favorite/>
                </ProtectedRouteUser>} />
             <Route path="/create-recipe" element={
                <ProtectedRouteUser isLoggedIn={isLoggedIn}>

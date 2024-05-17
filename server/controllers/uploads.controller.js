@@ -7,7 +7,7 @@ class UploadController {
             const file = req.files[key];
             const filePath = file.path;
             uploadedFilesPaths.push(filePath);
-            console.log('Файл был загружен:', filePath);
+           // console.log('Файл был загружен:', filePath);
           }
           console.log(uploadedFilesPaths)
           res.json({ filePath: uploadedFilesPaths });

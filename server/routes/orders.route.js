@@ -1,11 +1,11 @@
 const Router = require('express');
 const router = new Router;
-
+const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 const ordersController = require('../controllers/orders.controller');
 
-router.get("/orders", ordersController.getOrders);
-router.delete("/orders/:order_id", ordersController.deleteOrder);
-router.post("/addOrder", ordersController.addOrder);
+router.get("/orders", authMiddleware, adminMiddleware, ordersController.getOrders);
+router.delete("/orders/:order_id", authMiddleware, adminMiddleware, ordersController.deleteOrder);
+router.post("/addOrder", authMiddleware, adminMiddleware, ordersController.addOrder);
 
 
 module.exports = router;
