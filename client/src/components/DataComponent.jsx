@@ -4,6 +4,8 @@ import axios from 'axios';
 import { setDishes } from '../redux/dishesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Navigation from './Navigation';
+import LoginModal from './LoginModal';
+import { useNavigate } from 'react-router-dom';
 
 const DataComponent = () => {
    const dispatch = useDispatch();
@@ -14,8 +16,10 @@ const DataComponent = () => {
    const [isblock, setIsblock] = useState(false);
    const [resultSearching, setResultSearching] = useState("");
    const [isSearchActive, setIsSearchActive] = useState(true);
-
-
+   const isAdmin = useSelector(state => state.auth.isAdmin);
+   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+   const [showModal, setShowModal] = useState();
+   const navigate = useNavigate();
    const fetchData = async () => {
       try {
          const result = await axios.get('/api/dishes');
@@ -30,7 +34,7 @@ const DataComponent = () => {
    useEffect(() => {
       setSearchResult(dishes);
    }, [dishes]);
-   
+
    useEffect(() => {
       fetchData();
    }, []);
@@ -82,51 +86,61 @@ const DataComponent = () => {
    const handleBlur = () => {
       const timerId = setTimeout(() => {
          setIsSearchActive(false);
-      }, 100); 
+      }, 100);
       setTimeout(timerId);
    };
 
    const handleDeleteDish = async (dish_id) => {
       try {
-        const token = localStorage.getItem('token');
-        const config = {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        };
-        const response = await axios.delete(`/api/dishes/${dish_id}`, config);
-        fetchData();
-        console.log('Рецепт успешно удален:', response.data);
+         const token = localStorage.getItem('token');
+         const config = {
+            headers: {
+               'Authorization': `Bearer ${token}`
+            }
+         };
+         const response = await axios.delete(`/api/dishes/${dish_id}`, config);
+         fetchData();
+         console.log('Рецепт успешно удален:', response.data);
       } catch (error) {
-        console.error('Ошибка при удалении рецепта:', error.response.data.message);
+         console.error('Ошибка при удалении рецепта:', error.response.data.message);
       }
-    };
+   };
 
-    const handleAddFavorite = async (dish_id) => {
-      try {
-          const token = localStorage.getItem('token');
-          const config = {
-              headers: {
+   const handleAddFavorite = async (dish_id) => {
+      if (isLoggedIn) {
+         try {
+            const token = localStorage.getItem('token');
+            const config = {
+               headers: {
                   'Authorization': `Bearer ${token}`
-              }
-          };
-          const response = await axios.post('/api/addFavorite', { dish_id }, config);
-          console.log('Рецепт успешно добавлен в избранное:', response.data);
-      } catch (error) {
-          console.error('Ошибка при добавлении рецепта в избранное:', error.response.data.message);
+               }
+            };
+            const response = await axios.post('/api/addFavorite', { dish_id }, config);
+            console.log('Рецепт успешно добавлен в избранное:', response.data);
+         } catch (error) {
+            console.error('Ошибка при добавлении рецепта в избранное:', error.response.data.message);
+         }
+      } else {
+         setShowModal(true);
       }
-  };
 
-    const randomNum = () => {
+   };
+
+   const randomNum = () => {
       let num = Math.floor(Math.random() * 10000)
       //console.log(num)
       return num;
-    }
+   }
 
+   const handleCloseModal = () => {
+      setTimeout(() => {
+         setShowModal(false);
+      }, 100);
+   };
 
    return (
       <div>
-      <Navigation/>
+         <Navigation />
          <div style={{ width: "600px" }}>
             <Search
                searchValue={search}
@@ -156,17 +170,20 @@ const DataComponent = () => {
                   </ul>
                   <div>Описание: {item.description}</div>
                   <div>
-                  {item.step_numbers.map((stepNumber, index) => (
-                     <li key={index}>
-                        {`Шаг ${stepNumber}:`}
-                        <br />
-                        <img src={item.file_path[index]} alt="Фото шага" width={300} height={200} />
-                        <div style={{ width: "300px", overflowWrap: "break-word" }}>{item.step_descriptions[index]}</div>
-                     </li>
-                  ))}
+                     {item.step_numbers.map((stepNumber, index) => (
+                        <li key={index}>
+                           {`Шаг ${stepNumber}:`}
+                           <br />
+                           <img src={item.file_path[index]} alt="Фото шага" width={300} height={200} />
+                           <div style={{ width: "300px", overflowWrap: "break-word" }}>{item.step_descriptions[index]}</div>
+                        </li>
+                     ))}
                   </div>
-                  <button type="button" onClick={() => handleDeleteDish(item.dish_id)}>Удалить рецепт</button>
-                  <button type="button" onClick={() => handleAddFavorite(item.dish_id)}>Добавить в избранное</button>
+                  {isAdmin && <button type="button" onClick={() => handleDeleteDish(item.dish_id)}>Удалить рецепт</button>}
+                  {showModal && <LoginModal onClose={handleCloseModal} />}
+                  {!isAdmin &&
+                     <button type="button" onClick={() => handleAddFavorite(item.dish_id)}>Добавить в избранное
+                     </button>}
                   <br /><br />
                </div>
             ))}
