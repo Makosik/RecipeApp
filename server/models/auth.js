@@ -28,7 +28,7 @@ async function login(loginData) {
       userName: user.rows[0].user_name,
       email: user.rows[0].mail,
       isAdmin: user.rows[0].is_admin }, 
-      'my-secret-key', { expiresIn: '1h' });
+      'my-secret-key', { expiresIn: '3h' });
 
    return { message: 'Authentication successful', token };
 }

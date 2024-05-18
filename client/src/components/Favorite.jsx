@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navigation from './Navigation';
+import { useNavigate } from 'react-router-dom';
 
 const Favorite = () => {
    const [favorites, setFavorites] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
+   const navigate = useNavigate();
 
    const fetchFavorites = async () => {
       try {
@@ -15,12 +17,11 @@ const Favorite = () => {
                'Authorization': `Bearer ${token}`
             }
          };
-         const response = await axios.get('/api/favorites',config);
-         console.log(response.data.rows)
+         const response = await axios.get('/api/favorites', config);
          setFavorites(response.data.rows);
          setLoading(false);
       } catch (err) {
-         //setError('Ошибка при получении избранных рецептов');
+         setError('Ошибка при получении избранных рецептов');
          setLoading(false);
       }
    };
@@ -29,56 +30,48 @@ const Favorite = () => {
       fetchFavorites();
    }, []);
 
-   const randomNum = () => {
-      let num = Math.floor(Math.random() * 10000)
-      //console.log(num)
-      return num;
-    }
+   const handleCardClick = (dish_id) => {
+      navigate(`/dishes/${dish_id}`);
+   };
 
-    const handleDeleteFavorite = async (dish_id) => {
+   const handleDeleteFavorite = async (dish_id) => {
       try {
-        const token = localStorage.getItem('token');
-        const config = {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        };
-        const response = await axios.delete(`/api/favorites/${dish_id}`, config);
-        fetchFavorites();
-        console.log('Рецепт успешно удален из избранного:', response.data);
+         const token = localStorage.getItem('token');
+         const config = {
+            headers: {
+               'Authorization': `Bearer ${token}`
+            }
+         };
+         await axios.delete(`/api/favorites/${dish_id}`, config);
+         fetchFavorites();
       } catch (error) {
-        console.error('Ошибка при удалении рецепта из избранного:', error.response.data.message);
+         console.error('Ошибка при удалении рецепта из избранного:', error.response.data.message);
       }
-    };
+   };
 
    if (loading) return <p>Загрузка...</p>;
    if (error) return <p>{error}</p>;
 
+console.log(favorites)
+
    return (
-      <div>
+      <div className='wrapper '>
          <Navigation />
          <h1>Избранные рецепты</h1>
-         <div className="recipes">
-         {favorites.map((item) => (
-               <div key={randomNum()}>{item.dish_title}
-                  <ul>
-                     {item.ingredient_titles.map(ingr => (
-                        <li key={randomNum()}>{ingr}</li>
-                     ))}
-                  </ul>
-                  <div>Описание: {item.description}</div>
-                  <div>
-                  {item.step_numbers.map((stepNumber, index) => (
-                     <li key={index}>
-                        {`Шаг ${stepNumber}:`}
-                        <br />
-                        <img src={item.file_path[index]} alt="Фото шага" width={300} height={200} />
-                        <div style={{ width: "300px", overflowWrap: "break-word" }}>{item.step_descriptions[index]}</div>
-                     </li>
-                  ))}
+         <div className="recipe-cards">
+            {favorites.map((item) => (
+               <div className="recipe-card" key={item.dish_id} onClick={() => handleCardClick(item.dish_id)}>
+                  <img src={`http://localhost:3000/${item.coverphoto}`} alt={item.dish_title}  />
+                  <h3>{item.dish_title}</h3>
+                  <p>{item.description}</p>
+                  <div className="card-buttons">
+                     <button onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteFavorite(item.dish_id);
+                     }}>
+                        Удалить из избранного
+                     </button>
                   </div>
-                  <br /><br />
-                  <button type="button" onClick={() => handleDeleteFavorite(item.dish_id)}>Удалить из избранного</button>
                </div>
             ))}
          </div>

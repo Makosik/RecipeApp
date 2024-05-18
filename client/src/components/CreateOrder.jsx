@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setOrders } from '../redux/ordersSlice';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import CookingStep from "./CookingStep";
@@ -23,6 +22,8 @@ function AddDishForm() {
    const [selectedFiles, setSelectedFiles] = useState([]); // for upload
    const [lastSelectedFile, setLastSelectedFile] = useState(null);
    const navigate = useNavigate();
+   const [coverPhoto, setCoverPhoto] = useState(null);
+
 
    useEffect(() => {
       // Загрузка доступных ингредиентов из базы данных
@@ -93,73 +94,98 @@ function AddDishForm() {
    };
 
    const handleUpload = async () => {
-      if (selectedFiles) {
-         selectedFiles.forEach((file, index) => {
-            formData.append(`photo`, file); // Присваиваем каждому файлу уникальный ключ
-         });
+      const formData = new FormData();
+  
+      if (!selectedFiles.length && !coverPhoto) {
+          alert('Выберите файл для загрузки');
+          return;
+      }
+  
+      if (selectedFiles.length) {
+          selectedFiles.forEach(file => {
+              formData.append('photo', file);
+          });
+      }
+  
+      if (coverPhoto) {
+          formData.append('coverPhoto', coverPhoto);
+      }
+  
+      try {
+          const response = await axios.post('/api/upload', formData);
+          if (response.status === 200) {
+              const filePaths = response.data.filePath;
+              console.log('Фотографии успешно загружены:', filePaths);
+              return filePaths;
+          } else {
+              console.error('Ошибка при загрузке фотографии:', response.statusText);
+          }
+      } catch (error) {
+          console.error('Ошибка при отправке запроса на загрузку фотографии:', error);
+      }
+  };
+  
+ 
+  const handleSubmit = async (e) => {
+   e.preventDefault();
+   try {
+      if (selectedIngredients.length > 0 && title.length > 0) {
+         const uploadedFilePath = await handleUpload();
+         console.log('uploadedFilesPaths:', uploadedFilePath);
+         const coverPhotoFile = uploadedFilePath.filter(filePath => filePath.includes('coverPhoto')).join(''); // Объединяем массив в строку
+         console.log('coverPhotoFile:', coverPhotoFile);
+         const token = localStorage.getItem('token');
+         const config = {
+            headers: {
+               'Authorization': `Bearer ${token}`
+            }
+         };
+         await axios.post('/api/createDish', {
+            dish_title: title,
+            ingredient_id: selectedIngredients.map(ingredient => ingredient.id),
+            description: description,
+            cookingSteps: steps,
+            uploadedFilesPaths: uploadedFilePath,
+            coverPhotoFile: coverPhotoFile,
+            userId: userId
+         }, config);
+         setSelectedIngredients([]);
+         setDescription('');
+         setTitle('');
+         setSteps([]);
+         setStepNumber(1);
+         setSelectedFiles([]);
+         alert('Блюдо успешно добавлено в заявку!');
+         navigate('/');
       } else {
-         alert('Выберите файл для загрузки');
+         alert('Нельзя добавить блюдо без ингредиентов или без названия!');
       }
-      try {
-         const response = await axios.post('/api/upload', formData);
-         if (response.status === 200) {
-            const filePath = response.data.filePath;
-            console.log('Фотографии успешно загружены:', filePath);
-            //setUploadedFile(filePath);
-            return filePath;
-         } else {
-            console.error('Ошибка при загрузке фотографии:', response.statusText);
-         }
-      } catch (error) {
-         console.error('Ошибка при отправке запроса на загрузку фотографии:', error);
-      }
+   } catch (error) {
+      console.error('Ошибка при добавлении блюда:', error.response.data.message);
+      alert('Ошибка при добавлении блюда в заявку!');
+   }
+};
+
+
+   const handleCoverPhotoChange = (event) => {
+      setCoverPhoto(event.target.files[0]);
    };
 
-   const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-
-         if (selectedIngredients.length > 0 && title.length > 0) {
-            const uploadedFilePath = await handleUpload();
-            console.log('uploadedFilesPaths:', uploadedFilePath);
-            const token = localStorage.getItem('token');
-            const config = {
-               headers: {
-                  'Authorization': `Bearer ${token}`
-               }
-            };
-            await axios.post('/api/createDish', {
-               dish_title: title,
-               ingredient_id: selectedIngredients.map(ingredient => ingredient.id),
-               description: description,
-               cookingSteps: steps,
-               uploadedFilesPaths: uploadedFilePath,
-               userId: userId
-            }, config);
-            // const updatedOrders = await axios.get('/api/orders', config); 
-            // dispatch(setOrders(updatedOrders.data));
-            setSelectedIngredients([]);
-            setDescription('');
-            setTitle('');
-            setSteps([]);
-            setStepNumber(1);
-            setSelectedFiles([]);
-            alert('Блюдо успешно добавлено в заявку!');
-            navigate('/');
-         } else {
-            alert('Нельзя добавить блюдо без ингредиентов или без названия!');
-         }
-      } catch (error) {
-         console.error('Ошибка при добавлении блюда:', error.response.data.message);
-         alert('Ошибка при добавлении блюда в заявку!');
-      }
-   };
 
    return (
       <div>
          <Navigation />
          <h2>Добавить блюдо</h2>
          <form onSubmit={handleSubmit}>
+            <label>
+               Фотография для обложки:
+               <input
+                  type="file"
+                  accept="image/*,.png,.img,.gif,.web,"
+                  onChange={handleCoverPhotoChange}
+               />
+            </label>
+            <br />
             <label>
                Название блюда:
                <input type="text" value={title} onChange={handleDishInputChange} />

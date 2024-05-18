@@ -35,6 +35,7 @@ const Users = () => {
       };
      await axios.delete(`/api/users/${userId}`, config);
      setUsers(users.filter(user => user.id !== userId));
+     alert('Пользователь успешно удален')
      console.log('Пользователь успешно удален');
    } catch (error) {
      console.error('Ошибка при удалении пользователя:', error);

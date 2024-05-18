@@ -29,7 +29,8 @@ CREATE TABLE orders (
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     description VARCHAR(255),
 	is_deleted boolean DEFAULT false,
-	user_id INTEGER  REFERENCES users(id) ON DELETE CASCADE
+	user_id INTEGER  REFERENCES users(id) ON DELETE CASCADE,
+   coverPhoto_path VARCHAR(255) NOT NULL
 );
 
 drop TABLE orders CASCADE;

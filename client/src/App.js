@@ -12,6 +12,8 @@ import { login } from './redux/authSlice';
 import ProtectedRouteAdmin from './components/ProtectedRouteAdmin';
 import Favorite from './components/Favorite';
 import Users from './components/Users';
+import OrderDetails from './components/OrderDetails';
+import RecipeDetails from './components/RecipeDetails';
 
 function App() {
    const dispatch = useDispatch();
@@ -33,6 +35,8 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegistrationForm />} />
             <Route path="/recipes" element={<DataComponent />} />
+            <Route path="/order/:orderId" element={<OrderDetails />} />
+            <Route path="/dishes/:id" element={<RecipeDetails />} />
             <Route path="/favorites" element={
                <ProtectedRouteUser isLoggedIn={isLoggedIn}>
                   <Favorite/>

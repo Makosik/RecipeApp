@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setOrders } from '../redux/ordersSlice';
 import { setDishes } from '../redux/dishesSlice';
 import Navigation from './Navigation';
+import { Link, useNavigate} from 'react-router-dom';
 
 function ShowOrders() {
    const dispatch = useDispatch();
    const userId = useSelector(state => state.auth.userId)
    const orders = useSelector(state => state.orders.orders);
-   console.log(orders)
+   const navigate = useNavigate();
+   
    useEffect(() => {
       fetchData();
    }, []);
@@ -58,6 +60,7 @@ function ShowOrders() {
                'Authorization': `Bearer ${token}`
             }
          };
+         console.log(ingredient_id)
          const response = await axios.post(`/api/addOrder`, {
             "dish_title": dish_title,
             "ingredient_id": ingredient_id,
@@ -75,40 +78,41 @@ function ShowOrders() {
       }
    };
 
+   const handleRowClick = (orderId) => {
+      navigate(`/order/${orderId}`);
+   };
+
 
    return (
       <div>
          <Navigation />
+         <br /><br />
          <h1>Заявки:</h1>
 
-         <div>
-            {orders.map(order => (
-               <div key={order.order_id}>
-                  <div>Заявка номер: {order.order_id}</div>
-                  <div>user_id: {order.user_id}</div>
-                  <div>Дата заявки: {order.created_at}</div>
-                  <div>Название блюда: {order.dish_title}</div>
-                  <ul>
-                     {order.ingredients.map(ingredient => (
-                        <li key={ingredient}>{ingredient}</li>
-                     ))}
-                  </ul>
-                  <div>Описание: {order.description}</div>
-                  <div>
-                     {order.step_numbers.map((stepNumber, index) => (
-                        <li key={index}>
-                           {`Шаг ${stepNumber}:`}
-                           <br />
-                           <img src={order.file_path[index]} alt="Фото шага" width={300} height={200} />
-                           <div style={{ width: "300px", overflowWrap: "break-word" }}>{order.step_descriptions[index]}</div>
-                        </li>
-                     ))}
-                  </div>
-                  <button type="button" onClick={() => handleDeleteOrder(order.order_id)}>Удалить заявку</button>
-                  <button type="button" onClick={() => handleAddOrder(order.dish_title, order.order_id, order.ingredient_id, order.description, order.step_numbers, order.step_descriptions)}>Добавить заявку</button>
-               </div>
-            ))}
-         </div>
+         <table>
+            <thead>
+               <tr>
+                  <th>ID заявки</th>
+                  <th>ID пользователя</th>
+                  <th>Дата</th>
+                  <th>Название блюда</th>
+                  <th>Удалить</th>
+                  <th>Добавить</th>
+               </tr>
+            </thead>
+            <tbody>
+               {orders.map(order => (
+                  <tr key={order.order_id} onClick={() => handleRowClick(order.order_id)} style={{ cursor: 'pointer' }}>
+                     <td>{order.order_id}</td>
+                     <td>{order.user_id}</td>
+                     <td>{order.created_at}</td>
+                     <td>{order.dish_title}</td>
+                     <td><button onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.order_id); }}>Удалить заявку</button></td>
+                     <td><button onClick={(e) => { e.stopPropagation(); handleAddOrder(order.dish_title, order.order_id, order.ingredient_id); }}>Добавить заявку</button></td>
+                  </tr>
+               ))}
+            </tbody>
+         </table>
       </div>
    );
 }

@@ -1,12 +1,12 @@
 const db = require("./db");
 
 const getFavorites = async (userId) => {
-
-   return await db.query( `
+   return await db.query(`
       SELECT
           Dishes.id AS dish_id,
           Dishes.user_id as user_id,
           Dishes.title AS dish_title,
+          orders.coverphoto_path AS coverPhoto,
           ARRAY_AGG(DISTINCT Ingredients.title) AS ingredient_titles,
           orders.description AS description,
           ARRAY_AGG(DISTINCT stepsForOrders.step_number) AS step_numbers,
@@ -29,10 +29,10 @@ const getFavorites = async (userId) => {
       WHERE
           favorites.user_id = $1
       GROUP BY
-          Dishes.id, Dishes.user_id, Dishes.title, orders.description
+          Dishes.id, Dishes.user_id, Dishes.title, orders.coverphoto_path, orders.description
       ORDER BY
           MAX(Dishes_Ingredients.created_at_DI) DESC;
-   `, [userId])
+   `, [userId]);
 }
 
 

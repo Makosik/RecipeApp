@@ -5,7 +5,8 @@ import { setDishes } from '../redux/dishesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Navigation from './Navigation';
 import LoginModal from './LoginModal';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import '../style/styles.css';
 
 const DataComponent = () => {
    const dispatch = useDispatch();
@@ -15,11 +16,12 @@ const DataComponent = () => {
    const [selectedDish, setSelectedDish] = useState([]);
    const [isblock, setIsblock] = useState(false);
    const [resultSearching, setResultSearching] = useState("");
-   const [isSearchActive, setIsSearchActive] = useState(true);
+   const [isSearchActive, setIsSearchActive] = useState(false);
    const isAdmin = useSelector(state => state.auth.isAdmin);
    const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
    const [showModal, setShowModal] = useState();
    const navigate = useNavigate();
+
    const fetchData = async () => {
       try {
          const result = await axios.get('/api/dishes');
@@ -62,6 +64,7 @@ const DataComponent = () => {
       setIsblock(true)
       setSearchResult([obj]);
       setSelectedDish([]);
+      setSearch('')
    }
 
    const handleKeyPress = (event) => {
@@ -90,22 +93,6 @@ const DataComponent = () => {
       setTimeout(timerId);
    };
 
-   const handleDeleteDish = async (dish_id) => {
-      try {
-         const token = localStorage.getItem('token');
-         const config = {
-            headers: {
-               'Authorization': `Bearer ${token}`
-            }
-         };
-         const response = await axios.delete(`/api/dishes/${dish_id}`, config);
-         fetchData();
-         console.log('Рецепт успешно удален:', response.data);
-      } catch (error) {
-         console.error('Ошибка при удалении рецепта:', error.response.data.message);
-      }
-   };
-
    const handleAddFavorite = async (dish_id) => {
       if (isLoggedIn) {
          try {
@@ -126,22 +113,36 @@ const DataComponent = () => {
 
    };
 
-   const randomNum = () => {
-      let num = Math.floor(Math.random() * 10000)
-      //console.log(num)
-      return num;
-   }
-
    const handleCloseModal = () => {
-      setTimeout(() => {
-         setShowModal(false);
-      }, 100);
+      setShowModal(false);
    };
 
+   const handleDeleteDish = async (dish_id) => {
+      try {
+         const token = localStorage.getItem('token');
+         const config = {
+            headers: {
+               'Authorization': `Bearer ${token}`
+            }
+         };
+         const response = await axios.delete(`/api/dishes/${dish_id}`, config);
+         fetchData();
+         console.log('Рецепт успешно удален:', response.data);
+      } catch (error) {
+         console.error('Ошибка при удалении рецепта:', error.response.data.message);
+      }
+   };
+
+   const handleCardClick = (dish_id) => {
+      navigate(`/dishes/${dish_id}`);
+   };
+
+   const baseUrl = 'http://localhost:3000';
+
    return (
-      <div>
+      <div className='wrapper'>
          <Navigation />
-         <div style={{ width: "600px" }}>
+         <div className="search-section">
             <Search
                searchValue={search}
                setSearchValue={setSearch}
@@ -151,43 +152,32 @@ const DataComponent = () => {
                handleFocus={handleFocus}
                handleBlur={handleBlur}
             />
-            <div style={{ display: isSearchActive ? 'flex' : "none", flexDirection: "column" }}>
+            <div className="suggestions-container" style={{ display: isSearchActive ? 'block' : "none" }}>
                {selectedDish.map(item => (
-                  <span onClick={() => handleAddSelectedSearch(item)} style={{ cursor: 'pointer', marginTop: '10px' }} key={randomNum()}  >{item.dish_title}</span>
+                  <div className="suggestion-item" onClick={() => handleAddSelectedSearch(item)} key={item.dish_id}>
+                     {item.dish_title}
+                  </div>
                ))}
             </div>
          </div>
+
          <h1>Рецепты блюд:</h1>
-         <button onClick={() => handleReturnDishes()}>Вернуться к рецептам</button>
-         <p style={{ display: isblock ? 'block' : 'none' }}>Результаты поиска: {resultSearching}</p>
-         <div>
-            {searchResult.map((item) => (
-               <div key={randomNum()}>{item.dish_title}
-                  <ul>
-                     {item.ingredient_titles.map(ingr => (
-                        <li key={randomNum()}>{ingr}</li>
-                     ))}
-                  </ul>
-                  <div>Описание: {item.description}</div>
-                  <div>
-                     {item.step_numbers.map((stepNumber, index) => (
-                        <li key={index}>
-                           {`Шаг ${stepNumber}:`}
-                           <br />
-                           <img src={item.file_path[index]} alt="Фото шага" width={300} height={200} />
-                           <div style={{ width: "300px", overflowWrap: "break-word" }}>{item.step_descriptions[index]}</div>
-                        </li>
-                     ))}
+         <button className="return-button" onClick={() => handleReturnDishes()}>Вернуться к рецептам</button>
+         <p className="search-results" style={{ display: isblock ? 'block' : 'none' }}>Результаты поиска: {resultSearching}</p>
+         <div className="recipe-cards">
+            {searchResult.map(item => (
+               <div className="recipe-card" key={item.dish_id} onClick={() => handleCardClick(item.dish_id)}>
+                  <img src={baseUrl + '/' + item.coverphoto} alt={item.dish_title} width={300} height={200} />
+                  <h3>{item.dish_title}</h3>
+                  <p>{item.description}</p>
+                  <div className="card-buttons">
+                  {isAdmin && <button onClick={(e) => { e.stopPropagation(); handleDeleteDish(item.dish_id); }}>Удалить</button>}
+                  {!isAdmin && <button onClick={(e) => { e.stopPropagation(); handleAddFavorite(item.dish_id); navigate('/favorite'); }}>Избранное</button>}
                   </div>
-                  {isAdmin && <button type="button" onClick={() => handleDeleteDish(item.dish_id)}>Удалить рецепт</button>}
-                  {showModal && <LoginModal onClose={handleCloseModal} />}
-                  {!isAdmin &&
-                     <button type="button" onClick={() => handleAddFavorite(item.dish_id)}>Добавить в избранное
-                     </button>}
-                  <br /><br />
                </div>
             ))}
          </div>
+         {showModal && <LoginModal onClose={handleCloseModal} />}
       </div>
    );
 };

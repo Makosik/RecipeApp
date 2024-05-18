@@ -1,9 +1,24 @@
-const {getOrders, deleteOrder, addOrder,} = require("../models/orders")
+const {getOrders, deleteOrder, addOrder,getOrderById} = require("../models/orders")
 
 class OrdersController {
    async getOrders(req, res) {
       const orders = await getOrders(req.body)
       res.json(orders.rows);
+   }
+
+   async getOrderById(req, res) {
+      const orderId = req.params.id;
+      try {
+         const order = await getOrderById(orderId);
+         if (order) {
+            res.json(order);
+         } else {
+            res.status(404).json({ message: 'Order not found' });
+         }
+      } catch (error) {
+         console.error('Error fetching order:', error);
+         res.status(500).json({ message: 'Internal Server Error' });
+      }
    }
 
    async deleteOrder(req, res) {

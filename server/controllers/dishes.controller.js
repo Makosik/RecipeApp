@@ -1,10 +1,25 @@
-const {getDishes, getIngredients, deleteDish, createDish} = require("../models/dishes")
+const {getDishes, getIngredients, deleteDish, createDish, getDishById} = require("../models/dishes")
 
 class DishesController {
 
    async getDishes(req, res) {
       const dishes = await getDishes(req.body);
       res.json(dishes.rows);
+   }
+
+   async getDishById(req, res) {
+      const {id} = req.params;
+      try {
+         const dish = await getDishById(id);
+         if (dish) {
+            res.json(dish);
+         } else {
+            res.status(404).json({ message: 'Такого рецепта нет' });
+         }
+      } catch (error) {
+         console.error('Ошибка при получении деталей рецепта:', error);
+         res.status(500).json({ message: 'Ошибка при получении деталей рецепта' });
+       }
    }
 
    async getIngredients(req, res) {

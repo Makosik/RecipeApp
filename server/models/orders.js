@@ -31,6 +31,38 @@ const getOrders =  async () => {
   return orders;
 }
 
+const getOrderById = async (orderId) => {
+   const order = await db.query(
+      `SELECT
+      o.id AS order_id,
+      o.user_id as user_id,
+      o.dish_title,
+      o.description AS order_description,
+      TO_CHAR(o.created_at, 'DD.MM.YYYY HH24:MI') AS created_at,
+      ARRAY_AGG(DISTINCT i.title) AS ingredients,
+      ARRAY_AGG(DISTINCT i.id) AS ingredient_id,
+      ARRAY_AGG(DISTINCT s.step_number) AS step_numbers,
+      ARRAY_AGG(DISTINCT s.step_description) AS step_descriptions,
+      ARRAY_AGG(DISTINCT s.file_path) AS file_path
+  FROM orders o
+  JOIN LATERAL unnest(o.ingredient_id) AS ing_id ON true
+  JOIN ingredients i ON i.id = ing_id
+  LEFT JOIN LATERAL (
+      SELECT
+          step_number,
+          step_description,
+          file_path
+      FROM stepsForOrders s
+      WHERE s.order_id = o.id
+  ) s ON true
+  WHERE o.id = $1 AND o.is_deleted = FALSE
+  GROUP BY o.id, o.user_id, o.dish_title, o.description, created_at
+  ORDER BY o.id;
+  `, [orderId]);
+  
+  return order.rows[0]; // assuming the result contains only one order
+}
+
 
 const deleteOrder = async (order) => {
    const { order_id } = order;
@@ -51,4 +83,5 @@ module.exports = {
    getOrders,
    deleteOrder,
    addOrder,
+   getOrderById,
 };

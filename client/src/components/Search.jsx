@@ -1,5 +1,5 @@
-import React from 'react'
-
+import React, { useEffect, useRef } from 'react'
+import '../style/Search.css'
 function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelectedDish, handleFocus, handleBlur }) {
 
    const handleInputSearchChange = (event) => {
@@ -7,24 +7,38 @@ function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelect
    }
 
    const handleDeleteButton = () => {
-      setSearchValue([]);
+      setSearchValue('');
    }
 
-   // const handleHiddenBlock = () => {
-   //    setIsblock(false)
-   //    setSelectedDish([]);
-   // }
+   const Ref = useRef(null);
+
+  const handleClickOutside = (event) => {
+    if (Ref.current && !Ref.current.contains(event.target)) {
+      setSearchValue('');
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [searchValue]);
 
    return (
-      <div>
-         <input style={{ width: "550px" }}
-            type="text" placeholder="Search" value={searchValue}
+      <div className="search-container" >
+         <input 
+            ref={Ref}
+            className='input_search'
+            type="text"
+            placeholder="Search"
+            value={searchValue}
             onChange={handleInputSearchChange}
             onKeyPress={onKeyPress}
             onFocus={handleFocus}
             onBlur={handleBlur}
          />
-         {<button onClick={() => { handleDeleteButton()}}>X</button>}
+         {<button className="delete-button" onClick={() => { handleDeleteButton()}}>X</button>}
       </div>
    )
 }
