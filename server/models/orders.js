@@ -38,6 +38,7 @@ const getOrderById = async (orderId) => {
       o.user_id as user_id,
       o.dish_title,
       o.description AS order_description,
+      o.coverphoto_path AS coverPhoto,
       TO_CHAR(o.created_at, 'DD.MM.YYYY HH24:MI') AS created_at,
       ARRAY_AGG(DISTINCT i.title) AS ingredients,
       ARRAY_AGG(DISTINCT i.id) AS ingredient_id,
@@ -56,7 +57,7 @@ const getOrderById = async (orderId) => {
       WHERE s.order_id = o.id
   ) s ON true
   WHERE o.id = $1 AND o.is_deleted = FALSE
-  GROUP BY o.id, o.user_id, o.dish_title, o.description, created_at
+  GROUP BY o.id, o.user_id, o.dish_title, o.description, created_at, o.coverphoto_path
   ORDER BY o.id;
   `, [orderId]);
   

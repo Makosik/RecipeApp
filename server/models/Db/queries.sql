@@ -23,11 +23,11 @@ SELECT * from users;
 
 
 CREATE TABLE orders (
-    id SERIAL PRIMARY KEY,
-    dish_title VARCHAR(255) NOT NULL,
-    ingredient_id INTEGER [],
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    description VARCHAR(255),
+   id SERIAL PRIMARY KEY,
+   dish_title VARCHAR(255) NOT NULL,
+   ingredient_id INTEGER [],
+   created_at TIMESTAMP NOT NULL DEFAULT now(),
+   description TEXT,
 	is_deleted boolean DEFAULT false,
 	user_id INTEGER  REFERENCES users(id) ON DELETE CASCADE,
    coverPhoto_path VARCHAR(255) NOT NULL
@@ -40,7 +40,7 @@ SELECT * from orders;
 
 CREATE TABLE Dishes (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+   title VARCHAR(255) NOT NULL,
 	order_id integer REFERENCES orders(id),
 	user_id integer REFERENCES users(id)
 );

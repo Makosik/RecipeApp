@@ -5,6 +5,7 @@ import { setOrders } from '../redux/ordersSlice';
 import { setDishes } from '../redux/dishesSlice';
 import Navigation from './Navigation';
 import { Link, useNavigate} from 'react-router-dom';
+import '../style/CreateOrder.css'
 
 function ShowOrders() {
    const dispatch = useDispatch();
@@ -84,7 +85,7 @@ function ShowOrders() {
 
 
    return (
-      <div>
+      <div className='add-dish-container'>
          <Navigation />
          <br /><br />
          <h1>Заявки:</h1>

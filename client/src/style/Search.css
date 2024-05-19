@@ -3,6 +3,10 @@
    justify-content: center;
    align-items: center;
    margin-top: 50px;
+   width: 700px;
+   height: 170px;
+   background: #E8E4E0;
+   border-radius: 10px;
    position: relative;
 }
 .search-section{
@@ -52,7 +56,6 @@ h1 {
 }
 
 .search-results {
- 
    font-size: 16px;
    color: #555;
    margin-top: 10px;
@@ -74,7 +77,42 @@ h1 {
    outline: none;
 }
 
+.closeModal {
+	position: absolute;
+	top: 30px;
+	right: 20px;
+	width: 24px;
+	height: 24px;
+	opacity: 0.2;
+	cursor: pointer;
+  transition: opacity ease 0.5s;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+.delete-button::before,
+.delete-button::after {
+	content: '';
+	position: absolute;
+	display: block;
+	width: 40px;
+	height: 3px;
+	background: #000;
+}
+
+.delete-button::before {
+	transform: rotate(45deg);
+}
+
+.delete-button::after {
+	transform: rotate(-45deg);
+}
+
 .delete-button {
+   width: 40px;
+   height: 40px;
    padding: 10px 15px;
    border: none;
    background-color: #007bff;
@@ -83,6 +121,7 @@ h1 {
    border-radius: 0 4px 4px 0;
    font-size: 16px;
    transition: background-color 0.3s;
+   
 }
 
 .delete-button:hover {

@@ -140,6 +140,7 @@ const DataComponent = () => {
    const baseUrl = 'http://localhost:3000';
 
    return (
+      <div className='background-container '> 
       <div className='wrapper'>
          <Navigation />
          <div className="search-section">
@@ -169,7 +170,7 @@ const DataComponent = () => {
                <div className="recipe-card" key={item.dish_id} onClick={() => handleCardClick(item.dish_id)}>
                   <img src={baseUrl + '/' + item.coverphoto} alt={item.dish_title} width={300} height={200} />
                   <h3>{item.dish_title}</h3>
-                  <p>{item.description}</p>
+                  <p className='recipe-card-desc'>{item.description}</p>
                   <div className="card-buttons">
                   {isAdmin && <button onClick={(e) => { e.stopPropagation(); handleDeleteDish(item.dish_id); }}>Удалить</button>}
                   {!isAdmin && <button onClick={(e) => { e.stopPropagation(); handleAddFavorite(item.dish_id); navigate('/favorite'); }}>Избранное</button>}
@@ -178,6 +179,7 @@ const DataComponent = () => {
             ))}
          </div>
          {showModal && <LoginModal onClose={handleCloseModal} />}
+      </div>
       </div>
    );
 };

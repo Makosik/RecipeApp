@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navigation from './Navigation';
 
+
 function OrderDetails() {
    const { orderId } = useParams();
    const [orderDetails, setOrderDetails] = useState(null);
@@ -74,10 +75,12 @@ function OrderDetails() {
       }
    };
 
-   const { order_id, user_id, created_at, dish_title, ingredients,ingredient_id, order_description, step_numbers, step_descriptions, file_path } = orderDetails;
+   const { order_id, user_id, created_at, dish_title, ingredients,ingredient_id, order_description, step_numbers, step_descriptions,coverphoto, file_path } = orderDetails;
    const baseUrl = 'http://localhost:3000';
+
+   
    return (
-      <div>
+      <div style={{backdropFilter: 'blur(1px)', paddingTop: '50px'}}>
          <Navigation />
          <h2>Детали заказа #{order_id}</h2>
          <div>
@@ -85,6 +88,7 @@ function OrderDetails() {
             <div>user_id: {user_id}</div>
             <div>Дата заявки: {created_at}</div>
             <div>Название блюда: {dish_title}</div>
+            <img src={`${baseUrl}/${coverphoto}`} alt="Фото шага" width={300} height={200} />
             <ul>
                {ingredients.map((ingredient, index) => (
                   <li key={index}>{ingredient}</li>

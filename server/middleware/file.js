@@ -1,5 +1,6 @@
 const multer = require('multer');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 const storage = multer.diskStorage({
     destination(req, file, cb) {
@@ -10,7 +11,8 @@ const storage = multer.diskStorage({
         }
     },
     filename(req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
+      const uniqueSuffix = Date.now() + '-' + uuidv4(); // уникальный идентификатор
+      cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
 

@@ -1,12 +1,11 @@
 .recipe-cards {
    display: flex;
    flex-wrap: wrap;
-
-   gap: 50px;  
-   
+   gap: 50px;    
 }
 
 .recipe-card {
+   background: #fff;
    margin-top: 50px;
    display: flex;
    flex-direction: column;
@@ -20,6 +19,12 @@
    transition: transform 0.3s ease;
    cursor: pointer;
    box-sizing: border-box;
+}
+.recipe-card-desc{
+   overflow :hidden;
+   white-space: nowrap;
+   width: 350px;
+   text-overflow: ellipsis;
 }
 
 .recipe-card:hover {

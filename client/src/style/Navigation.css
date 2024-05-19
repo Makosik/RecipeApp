@@ -31,8 +31,16 @@ nav ul li button {
    transition: background-color 0.3s, color 0.3s;
 }
 
+nav ul li {
+   flex: 1; 
+ }
+ 
+ nav ul li button {
+   width: 100%; 
+ }
+
 nav ul li button:hover {
-   background-color: #555;
+   background-color: #5555554a;
    color: #000000;
 }
 

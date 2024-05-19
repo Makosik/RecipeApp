@@ -40,6 +40,7 @@ const RecipeDetails = () => {
             steps
          };
          setRecipe(recipeData);
+         //console.log(recipeData)
       } catch (error) {
          console.error('Ошибка при загрузке деталей рецепта:', error);
       }
@@ -95,7 +96,7 @@ const RecipeDetails = () => {
    const handleCloseModal = () => {
       setShowModal(false);
    };
-console.log(recipe)
+
    return (
       <div className="recipe-details-container">
          <Navigation />
@@ -108,8 +109,8 @@ console.log(recipe)
             </div>
             {showModal && <LoginModal onClose={handleCloseModal} />}
             <div className="recipe-details-right">
-            {!isAdmin && <button  className="favorite-button" onClick={() => { handleAddFavorite(recipe.dish_id);  }}>Добавить Избранное</button>}
-            {isAdmin && <button className="favorite-button"  onClick={() => { handleDeleteDish(recipe.dish_id); }}>Удалить рецепт</button>}
+            {!isAdmin && <button  className="favorite-button" style={{marginLeft: '100px'}}  onClick={() => { handleAddFavorite(recipe.dish_id);  }}>Добавить Избранное</button>}
+            {isAdmin && <button className="favorite-button" style={{marginLeft: '100px'}}  onClick={() => { handleDeleteDish(recipe.dish_id); }}>Удалить рецепт</button>}
                <div className="ingredient-list">
                   <h3>Ингредиенты:</h3>
                   <ul>
@@ -118,6 +119,12 @@ console.log(recipe)
                      ))}
                   </ul>
                </div>
+            </div>
+         </div>
+         <div className='recipe-decription'>
+            <h3>Описание</h3>
+            <div>
+               {recipe.description}
             </div>
          </div>
          <div className="recipe-steps">

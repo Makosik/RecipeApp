@@ -38,7 +38,7 @@ function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelect
             onFocus={handleFocus}
             onBlur={handleBlur}
          />
-         {<button className="delete-button" onClick={() => { handleDeleteButton()}}>X</button>}
+         {<button className="delete-button" onClick={() => { handleDeleteButton()}}></button>}
       </div>
    )
 }

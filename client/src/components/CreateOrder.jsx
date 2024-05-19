@@ -6,6 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import CookingStep from "./CookingStep";
 import Navigation from './Navigation';
+import '../style/CreateOrder.css'
 
 
 function AddDishForm() {
@@ -65,11 +66,19 @@ function AddDishForm() {
       setSelectedIngredients(prevIngredients => prevIngredients.filter(ingredient => ingredient.title !== title));
    };
 
+   const handleStepDelete = (stepId) =>{
+      const filteredSteps = steps.filter(step => step.step_number !== stepId+1);
+      const updatedSteps = filteredSteps.map((step, index) => ({
+         ...step,
+         step_number: index + 1 
+      }));
+      setSteps(updatedSteps);
+      setStepNumber(updatedSteps.length + 1);
+   }
+
    const handleChangeTextarea = (e) => {
       setDescription(e.target.value)
    };
-
-   const formData = new FormData();
 
    const handleFileChange = (event) => {
       setLastSelectedFile(event.target.files[0]);
@@ -89,7 +98,7 @@ function AddDishForm() {
          setSelectedFiles([...selectedFiles, lastSelectedFile]); // Добавление последнего выбранного файла к общему списку файлов
          setLastSelectedFile(null); // Сброс последнего выбранного файла
       } else {
-         console.log('Error! File was not selected');
+         alert('Нельзя добавить шаг без выбранной фотографии');
       }
    };
 
@@ -173,26 +182,26 @@ function AddDishForm() {
 
 
    return (
-      <div>
+      <div className='background-container'>
+      <div className="add-dish-container">
+     
          <Navigation />
-         <h2>Добавить блюдо</h2>
-         <form onSubmit={handleSubmit}>
-            <label>
-               Фотография для обложки:
+         <h1 className="title">Добавить блюдо</h1>
+         <form className="form" onSubmit={handleSubmit}>
+            <div className="form-group">
+               <label>Фотография для обложки:</label>
                <input
                   type="file"
                   accept="image/*,.png,.img,.gif,.web,"
                   onChange={handleCoverPhotoChange}
                />
-            </label>
-            <br />
-            <label>
-               Название блюда:
+            </div>
+            <div className="form-group">
+               <label>Название блюда:</label>
                <input type="text" value={title} onChange={handleDishInputChange} />
-            </label>
-            <br />
-            <label>
-               Название ингредиента:
+            </div>
+            <div className="form-group">
+               <label>Название ингредиента:</label>
                <Autocomplete
                   options={availableIngredients}
                   getOptionLabel={(option) => option.title}
@@ -203,40 +212,43 @@ function AddDishForm() {
                   }}
                   renderInput={(params) => <TextField {...params} label="Ингредиент" />}
                />
-            </label>
-            <button type="button" onClick={handleIngredientAdd}>Добавить ингредиент</button>
-            <ul>
-               {selectedIngredients.map(ingredient => (
-                  <li key={ingredient.id}>
-                     {ingredient.title} <button type='button' onClick={() => handleIngredientDelete(ingredient.title)}>X</button>
-                  </li>
-               ))}
-            </ul>
-            <label>
-               <textarea name="description" onChange={handleChangeTextarea} value={description} placeholder='Добавьте описание' id="" cols="30" rows="10"></textarea>
-            </label>
-            <br />
-            <label>
+               <button type="button" onClick={handleIngredientAdd} className="add-button">Добавить ингредиент</button>
+               <ul className="ingredient-list">
+                  {selectedIngredients.map(ingredient => (
+                     <li key={ingredient.id}>
+                        {ingredient.title} <button type='button' onClick={() => handleIngredientDelete(ingredient.title)} className="delete-button"></button>
+                     </li>
+                  ))}
+               </ul>
+            </div>
+            <div className="form-group">
+               <label>Описание:</label>
+               <textarea name="description" onChange={handleChangeTextarea} value={description} placeholder='Добавьте описание' cols="30" rows="10"></textarea>
+            </div>
+            <div className="form-group">
+               <label>Шаги приготовления:</label>
                <input
                   type="file"
                   accept='image/*,.png,.img,.gif,.web,'
-                  onChange={handleFileChange} />
-               <br />
+                  onChange={handleFileChange} 
+               />
+               <button type='button' onClick={handleAddStep} className="add-button">Добавить шаг</button>
                <CookingStep stepNumber={stepNumber} stepDescription={stepDescription} setStepDescription={setStepDescription} />
-               <div>
+               <div className="steps">
                   {steps.map((step, index) => (
-                     <li key={index}>
+                     <li key={index} className="step">
                         {`Шаг ${step.step_number}:`}
                         <br />
                         {step.tempPhoto && <img src={step.tempPhoto} alt={`Выбранное изображение`} width={300} height={200} />}
-                        <div style={{ width: "300px", overflowWrap: "break-word" }}>{step.step_description}</div>
+                        <div className="step-description">{step.step_description}</div>
+                        <button type='button' onClick={() => handleStepDelete(index)} className="delete-button"></button>
                      </li>
                   ))}
                </div>
-               <button type='button' onClick={handleAddStep}>Добавить шаг</button>
-            </label>
-            <button style={{ display: "block", marginTop: "50px" }} type="submit">Добавить блюдо</button>
+            </div>
+            <button style={{ display: "block", marginTop: "50px" }} type="submit" className="submit-button">Добавить блюдо</button>
          </form>
+      </div>
       </div>
    );
 }
