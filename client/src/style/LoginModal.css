@@ -1,3 +1,4 @@
+/* Общие стили для модального окна */
 .modal-overlay {
    position: fixed;
    top: 0;
@@ -12,21 +13,34 @@
  }
  
  .modal {
-   position: relative; 
+   position: relative;
    background: white;
    padding: 20px;
    border-radius: 8px;
    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   width: 80%; /* относительная ширина */
+   max-width: 600px; /* максимальная ширина для больших экранов */
+   margin: 0 20px; /* немного отступов для маленьких экранов */
  }
  
  .close-button {
    position: absolute;
-   top: 5px;
-   right: 5px;
+   top: 10px;
+   right: 10px;
+   background: none;
+   border: none;
    font-size: 20px;
    cursor: pointer;
-   background: transparent;
-   border: none;
-   outline: none;
+ }
+
+ body.modal-open {
+   overflow: hidden;
+ }
+ 
+ /* Адаптивные стили для разных размеров экрана */
+ @media (max-width: 768px) {
+   .modal {
+     width: 90%; /* увеличиваем ширину для маленьких экранов */
+   }
  }
  

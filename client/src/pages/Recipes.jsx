@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import Search from "./Search";
+import Search from "../components/Search";
 import axios from 'axios';
-import { setDishes } from '../redux/dishesSlice';
+import { setDishes } from '.././redux/dishesSlice';
+import { toggleFavorite } from '.././redux/favoriteSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import Navigation from './Navigation';
-import LoginModal from './LoginModal';
-import { Link, useNavigate } from 'react-router-dom';
+import Navigation from '../components/Navigation';
+import LoginModal from '../components/LoginModal';
+import { useNavigate } from 'react-router-dom';
 import '../style/styles.css';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const DataComponent = () => {
    const dispatch = useDispatch();
@@ -21,12 +23,13 @@ const DataComponent = () => {
    const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
    const [showModal, setShowModal] = useState();
    const navigate = useNavigate();
+   const [blockForBtn, setblockForBtn] = useState(false);
+   const userId = useSelector(state => state.auth.userId);
 
    const fetchData = async () => {
       try {
          const result = await axios.get('/api/dishes');
          dispatch(setDishes(result.data));
-         //console.log(result.data)
          setSearchResult(result.data);
       } catch (error) {
          console.error('Ошибка при получении блюд:', error);
@@ -62,6 +65,7 @@ const DataComponent = () => {
    const handleAddSelectedSearch = (obj) => {
       setResultSearching(obj.dish_title)
       setIsblock(true)
+      setblockForBtn(true)
       setSearchResult([obj]);
       setSelectedDish([]);
       setSearch('')
@@ -72,14 +76,24 @@ const DataComponent = () => {
          event.target.blur();
          setResultSearching(search)
          setIsblock(true)
+         setblockForBtn(true)
          setIsSearchActive(false);
          filterSearchDishes();
       }
    };
 
+   const handleClickSearch = () => {
+      setResultSearching(search)
+      setIsblock(true)
+      setblockForBtn(true)
+      setIsSearchActive(false);
+      filterSearchDishes();
+   }
+
    const handleReturnDishes = () => {
       setSearchResult(dishes);
       setIsblock(false)
+      setblockForBtn(false)
    }
 
    const handleFocus = () => {
@@ -103,9 +117,12 @@ const DataComponent = () => {
                }
             };
             const response = await axios.post('/api/addFavorite', { dish_id }, config);
+            dispatch(toggleFavorite({ userId, dishId: dish_id }));
             console.log('Рецепт успешно добавлен в избранное:', response.data);
+            alert('Рецепт успешно добавлен в избранное')
          } catch (error) {
             console.error('Ошибка при добавлении рецепта в избранное:', error.response.data.message);
+            alert('Рецепт уже находится в избранном')
          }
       } else {
          setShowModal(true);
@@ -140,46 +157,50 @@ const DataComponent = () => {
    const baseUrl = 'http://localhost:3000';
 
    return (
-      <div className='background-container '> 
-      <div className='wrapper'>
-         <Navigation />
-         <div className="search-section">
-            <Search
-               searchValue={search}
-               setSearchValue={setSearch}
-               onKeyPress={handleKeyPress}
-               setIsblock={setIsblock}
-               setSelectedDish={setSelectedDish}
-               handleFocus={handleFocus}
-               handleBlur={handleBlur}
-            />
-            <div className="suggestions-container" style={{ display: isSearchActive ? 'block' : "none" }}>
-               {selectedDish.map(item => (
-                  <div className="suggestion-item" onClick={() => handleAddSelectedSearch(item)} key={item.dish_id}>
-                     {item.dish_title}
+      <div className='background-container '>
+         <div className='wrapper'>
+            <Navigation />
+            <div className="search-section">
+               <Search
+                  searchValue={search}
+                  setSearchValue={setSearch}
+                  onKeyPress={handleKeyPress}
+                  setIsblock={setIsblock}
+                  setSelectedDish={setSelectedDish}
+                  handleFocus={handleFocus}
+                  handleBlur={handleBlur}
+               />
+               <div className='icon-background' onClick={() => handleClickSearch()}></div>
+               <p className="search-results" style={{ display: isblock ? 'block' : 'none' }}>Результаты поиска: {resultSearching}</p>
+               <div className="suggestions-container" style={{ display: isSearchActive ? 'block' : "none" }}>
+                  {selectedDish.map(item => (
+                     <div className="suggestion-item" onClick={() => handleAddSelectedSearch(item)} key={item.dish_id}>
+                        {item.dish_title}
+                     </div>
+                  ))}
+               </div>
+            </div>
+            {blockForBtn && <button className="return-button" onClick={() => handleReturnDishes()}>Вернуться к рецептам</button>}
+            <div className="recipe-cards">
+               {searchResult.map(item => (
+                  <div className="recipe-card" key={item.dish_id} onClick={() => handleCardClick(item.dish_id)}>
+                     <img src={baseUrl + '/' + item.coverphoto} alt={item.dish_title} width={300} height={200} />
+                     <h3>{item.dish_title}</h3>
+                     <p className='recipe-card-desc'>{item.description}</p>
+                     <div className="card-buttons">
+
+                        {!isAdmin
+                           &&
+                           <button className="favorite-button" onClick={(e) => { e.stopPropagation(); handleAddFavorite(item.dish_id); }}>Добавить в избранное</button>}
+
+                        {isAdmin && <button className='card-buttons-del' onClick={(e) => { e.stopPropagation(); handleDeleteDish(item.dish_id); }}>Удалить рецепт</button>}
+
+                     </div>
                   </div>
                ))}
             </div>
+            {showModal && <LoginModal onClose={handleCloseModal} />}
          </div>
-
-         <h1>Рецепты блюд:</h1>
-         <button className="return-button" onClick={() => handleReturnDishes()}>Вернуться к рецептам</button>
-         <p className="search-results" style={{ display: isblock ? 'block' : 'none' }}>Результаты поиска: {resultSearching}</p>
-         <div className="recipe-cards">
-            {searchResult.map(item => (
-               <div className="recipe-card" key={item.dish_id} onClick={() => handleCardClick(item.dish_id)}>
-                  <img src={baseUrl + '/' + item.coverphoto} alt={item.dish_title} width={300} height={200} />
-                  <h3>{item.dish_title}</h3>
-                  <p className='recipe-card-desc'>{item.description}</p>
-                  <div className="card-buttons">
-                  {isAdmin && <button onClick={(e) => { e.stopPropagation(); handleDeleteDish(item.dish_id); }}>Удалить</button>}
-                  {!isAdmin && <button onClick={(e) => { e.stopPropagation(); handleAddFavorite(item.dish_id); navigate('/favorite'); }}>Избранное</button>}
-                  </div>
-               </div>
-            ))}
-         </div>
-         {showModal && <LoginModal onClose={handleCloseModal} />}
-      </div>
       </div>
    );
 };

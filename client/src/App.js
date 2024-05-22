@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import DataComponent from './components/DataComponent';
-import AddDishForm from './components/CreateOrder';
-import ShowOrders from './components/ShowOrders';
-import RegistrationForm from './components/RegistrationForm';
-import LoginForm from './components/LoginForm';
+import DataComponent from './pages/Recipes';
+import AddDishForm from './pages/CreateOrder';
+import ShowOrders from './pages/ShowOrders';
+import RegistrationForm from './pages/RegistrationForm';
+import LoginForm from './pages/LoginForm';
 import ProtectedRouteUser from './components/ProtectedRouteUser';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
 import { login } from './redux/authSlice';
 import ProtectedRouteAdmin from './components/ProtectedRouteAdmin';
-import Favorite from './components/Favorite';
-import Users from './components/Users';
-import OrderDetails from './components/OrderDetails';
-import RecipeDetails from './components/RecipeDetails';
+import Favorite from './pages/Favorite';
+import Users from './pages/Users';
+import OrderDetails from './pages/OrderDetails';
+import RecipeDetails from './pages/RecipeDetails';
 
 function App() {
    const dispatch = useDispatch();
@@ -37,24 +37,29 @@ function App() {
             <Route path="/recipes" element={<DataComponent />} />
             <Route path="/order/:orderId" element={<OrderDetails />} />
             <Route path="/dishes/:id" element={<RecipeDetails />} />
+
             <Route path="/favorites" element={
                <ProtectedRouteUser isLoggedIn={isLoggedIn}>
-                  <Favorite/>
+                  <Favorite />
                </ProtectedRouteUser>} />
+
             <Route path="/create-recipe" element={
                <ProtectedRouteUser isLoggedIn={isLoggedIn}>
                   <AddDishForm />
                </ProtectedRouteUser>} />
+
             <Route path="/show-orders" element={
                <ProtectedRouteAdmin isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
                   <ShowOrders />
                </ProtectedRouteAdmin>
             } />
+
             <Route path="/users" element={
                <ProtectedRouteAdmin isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
-                  <Users/>
+                  <Users />
                </ProtectedRouteAdmin>
             } />
+
             <Route path="*" element={<DataComponent />} />
 
          </Routes>

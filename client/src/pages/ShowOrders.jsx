@@ -1,18 +1,18 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setOrders } from '../redux/ordersSlice';
-import { setDishes } from '../redux/dishesSlice';
-import Navigation from './Navigation';
-import { Link, useNavigate} from 'react-router-dom';
-import '../style/CreateOrder.css'
+import { setOrders } from '.././redux/ordersSlice';
+import { setDishes } from '.././redux/dishesSlice';
+import Navigation from '../components/Navigation';
+import { useNavigate } from 'react-router-dom';
+import '../style/CreateOrder.css';
 
 function ShowOrders() {
    const dispatch = useDispatch();
    const userId = useSelector(state => state.auth.userId)
    const orders = useSelector(state => state.orders.orders);
    const navigate = useNavigate();
-   
+
    useEffect(() => {
       fetchData();
    }, []);
@@ -108,8 +108,8 @@ function ShowOrders() {
                      <td>{order.user_id}</td>
                      <td>{order.created_at}</td>
                      <td>{order.dish_title}</td>
-                     <td><button onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.order_id); }}>Удалить заявку</button></td>
-                     <td><button onClick={(e) => { e.stopPropagation(); handleAddOrder(order.dish_title, order.order_id, order.ingredient_id); }}>Добавить заявку</button></td>
+                     <td><button className='card-buttons-del' onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.order_id); }}>Удалить заявку</button></td>
+                     <td><button className='card-button' onClick={(e) => { e.stopPropagation(); handleAddOrder(order.dish_title, order.order_id, order.ingredient_id); }}>Добавить заявку</button></td>
                   </tr>
                ))}
             </tbody>

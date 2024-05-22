@@ -1,4 +1,5 @@
 .search-container {
+   gap: 10px;
    display: flex;
    justify-content: center;
    align-items: center;
@@ -9,7 +10,8 @@
    border-radius: 10px;
    position: relative;
 }
-.search-section{
+
+.search-section {
    display: flex;
    justify-content: center;
    align-items: center;
@@ -17,30 +19,32 @@
    margin-top: 50px;
    position: relative;
 }
+
 .suggestions-container {
    display: flex;
    flex-direction: column;
    position: absolute;
-   top: 100%;
-   left: 337px;
-   right: 382px;
+   top: 150px;
+   left: 335px;
+   right: 384px;
    background-color: #fff;
-  
+
    border-radius: 0 0 4px 4px;
    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
    z-index: 10;
    margin-top: 5px;
 }
+
 h1 {
    margin-top: 50px;
-  
+
    font-size: 24px;
    color: #333;
 }
 
 .return-button {
-   /* display: block; */
    margin: 20px auto;
+   margin-left: 795px;
    padding: 10px 20px;
    background-color: #007bff;
    color: #fff;
@@ -56,11 +60,26 @@ h1 {
 }
 
 .search-results {
+   position: absolute;
+   top: 164px;
+   left: 340px;
    font-size: 16px;
    color: #555;
    margin-top: 10px;
 }
 
+
+.icon-background {
+   cursor: pointer;
+   top: 118px;
+   right: 386px;
+   position: absolute;
+   width: 34px;
+   height: 34px;
+   background-image: url('../search.jpg');
+   background-size: cover;
+   background-repeat: no-repeat;
+}
 
 .input_search {
    width: 550px;
@@ -77,37 +96,24 @@ h1 {
    outline: none;
 }
 
-.closeModal {
-	position: absolute;
-	top: 30px;
-	right: 20px;
-	width: 24px;
-	height: 24px;
-	opacity: 0.2;
-	cursor: pointer;
-  transition: opacity ease 0.5s;
 
-	&:hover {
-		opacity: 1;
-	}
-}
 
 .delete-button::before,
 .delete-button::after {
-	content: '';
-	position: absolute;
-	display: block;
-	width: 40px;
-	height: 3px;
-	background: #000;
+   content: '';
+   position: absolute;
+   display: block;
+   width: 40px;
+   height: 3px;
+   background: #000;
 }
 
 .delete-button::before {
-	transform: rotate(45deg);
+   transform: rotate(45deg);
 }
 
 .delete-button::after {
-	transform: rotate(-45deg);
+   transform: rotate(-45deg);
 }
 
 .delete-button {
@@ -115,17 +121,25 @@ h1 {
    height: 40px;
    padding: 10px 15px;
    border: none;
-   background-color: #007bff;
+   background-color: #E8E4E0;
    color: #fff;
    cursor: pointer;
-   border-radius: 0 4px 4px 0;
    font-size: 16px;
    transition: background-color 0.3s;
-   
+
+}
+
+.inp-wrap-p {
+   z-index: 1000;
+   position: absolute;
+   left: 330px;
+   top: 90px;
+   font-style: inherit;
+   font-size: 14px;
 }
 
 .delete-button:hover {
-   background-color: #0056b3;
+   background-color: #bab9b7aa;
 }
 
 .delete-button:focus {

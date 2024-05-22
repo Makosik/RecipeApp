@@ -13,8 +13,10 @@ const LoginModal = ({ onClose }) => {
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
+    document.body.classList.add('modal-open');
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.body.classList.remove('modal-open');
     };
   }, [onClose]);
 

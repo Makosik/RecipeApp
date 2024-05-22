@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navigation from './Navigation';
+import Navigation from '../components/Navigation';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleFavorite } from '.././redux/favoriteSlice';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const Favorite = () => {
    const [favorites, setFavorites] = useState([]);
-   const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
    const navigate = useNavigate();
+   const dispatch = useDispatch();
+   const userId = useSelector(state => state.auth.userId);
+  
 
    const fetchFavorites = async () => {
       try {
@@ -19,10 +24,8 @@ const Favorite = () => {
          };
          const response = await axios.get('/api/favorites', config);
          setFavorites(response.data.rows);
-         setLoading(false);
       } catch (err) {
          setError('Ошибка при получении избранных рецептов');
-         setLoading(false);
       }
    };
 
@@ -43,29 +46,29 @@ const Favorite = () => {
             }
          };
          await axios.delete(`/api/favorites/${dish_id}`, config);
+         dispatch(toggleFavorite({ userId, dishId: dish_id }));
          fetchFavorites();
+         alert('Рецепт успешно удален из избранного')
       } catch (error) {
          console.error('Ошибка при удалении рецепта из избранного:', error.response.data.message);
       }
    };
 
-   if (loading) return <p>Загрузка...</p>;
    if (error) return <p>{error}</p>;
 
-console.log(favorites)
+   console.log(favorites)
 
    return (
       <div className='wrapper '>
          <Navigation />
-         <h1>Избранные рецепты</h1>
          <div className="recipe-cards">
             {favorites.map((item) => (
                <div className="recipe-card" key={item.dish_id} onClick={() => handleCardClick(item.dish_id)}>
-                  <img src={`http://localhost:3000/${item.coverphoto}`} alt={item.dish_title}  />
+                  <img src={`http://localhost:3000/${item.coverphoto}`} alt={item.dish_title} />
                   <h3>{item.dish_title}</h3>
-                  <p>{item.description}</p>
-                  <div className="card-buttons">
-                     <button onClick={(e) => {
+                  <p className='recipe-card-desc'>{item.description}</p>
+                  <div >
+                     <button className="card-buttons-del" onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteFavorite(item.dish_id);
                      }}>

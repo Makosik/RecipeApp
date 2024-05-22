@@ -1,0 +1,14 @@
+/* SkeletonLoading.css */
+.skeleton-loading-container {
+   display: flex;
+   flex-direction: column;
+ }
+ 
+ .skeleton-loading {
+   height: 20px;
+   width: 100%;
+   background-color: #f5f5f5;
+   border-radius: 4px;
+   margin-bottom: 10px;
+ }
+ 

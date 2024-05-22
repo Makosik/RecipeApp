@@ -1,4 +1,5 @@
 .recipe-cards {
+   margin-top: 30px;
    display: flex;
    flex-wrap: wrap;
    gap: 50px;    
@@ -33,8 +34,8 @@
 
 .recipe-card img {
    width: 100%;
-   height: 200px; /* Фиксированная высота для изображений */
-   object-fit: cover; /* Обрезка изображений по размеру контейнера */
+   height: 200px; 
+   object-fit: cover; 
    border-radius: 5px;
 }
 
@@ -47,18 +48,18 @@
    font-size: 14px;
    color: #555;
    margin-top: 5px;
-   flex-grow: 1; /* Расширение описания, чтобы кнопки были внизу */
+   flex-grow: 1;
 }
 
 .card-buttons {
    margin-top: 15px;
    display: flex;
    justify-content: center;
-   width: 100%; /* Кнопки занимают всю ширину карточки */
+   width: 100%; 
 }
 
-.card-buttons button {
-   background-color: #007bff;
+.card-buttons-del{
+   background-color: #a60707;
    color: #fff;
    border: none;
    padding: 8px 16px;
@@ -66,10 +67,11 @@
    cursor: pointer;
 }
 
-.card-buttons button:hover {
-   background-color: #0056b3;
+.card-buttons-del:hover{
+   background-color: #770404;
 }
 
 .wrapper-recipe{
    padding: 50px;
 }
+

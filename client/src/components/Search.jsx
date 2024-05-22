@@ -1,7 +1,6 @@
-import React, { useEffect, useRef } from 'react'
-import '../style/Search.css'
+import React, { useEffect, useRef } from 'react';
+import '../style/Search.css';
 function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelectedDish, handleFocus, handleBlur }) {
-
    const handleInputSearchChange = (event) => {
       setSearchValue(event.target.value);
    }
@@ -12,33 +11,38 @@ function Search({ searchValue, setSearchValue, setIsblock, onKeyPress, setSelect
 
    const Ref = useRef(null);
 
-  const handleClickOutside = (event) => {
-    if (Ref.current && !Ref.current.contains(event.target)) {
-      setSearchValue('');
-    }
-  };
+   const handleClickOutside = (event) => {
+      if (Ref.current && !Ref.current.contains(event.target)) {
+         // setSearchValue('');
+      }
+   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [searchValue]);
+   useEffect(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+         document.removeEventListener('mousedown', handleClickOutside);
+      };
+   }, [searchValue]);
 
    return (
-      <div className="search-container" >
-         <input 
-            ref={Ref}
-            className='input_search'
-            type="text"
-            placeholder="Search"
-            value={searchValue}
-            onChange={handleInputSearchChange}
-            onKeyPress={onKeyPress}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-         />
-         {<button className="delete-button" onClick={() => { handleDeleteButton()}}></button>}
+      <div>
+      <div className='inp-wrap-p'>Что сегодня хотите приготовить?</div>
+         <div className="search-container" >
+            <div className='inp-wrap'>
+               <input
+                  ref={Ref}
+                  className='input_search'
+                  type="text"
+                  placeholder="Search"
+                  value={searchValue}
+                  onChange={handleInputSearchChange}
+                  onKeyPress={onKeyPress}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+               />
+            </div>
+            <span><button className="delete-button" onClick={() => { handleDeleteButton() }}></button></span>
+         </div>
       </div>
    )
 }

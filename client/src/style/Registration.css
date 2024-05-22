@@ -1,0 +1,82 @@
+.register-container {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 100%;
+   min-height: 748px;
+   background-color: #007BFF;
+   flex-direction: column;
+}
+.register-container a{
+   margin-left: 10px;
+}
+.register-container form {
+   background-color: #fff;
+   padding: 40px;
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   width: 600px;
+   text-align: center;
+}
+
+.flex-form {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+
+.register-container h2 {
+   margin-bottom: 20px;
+}
+
+.register-container label {
+   width: 450px;
+   display: block;
+   margin: 10px 0 5px;
+   text-align: left;
+}
+
+.register-container input {
+   font-size: 16px;
+   width: 450px;
+   padding: 10px;
+   margin-bottom: 15px;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+}
+
+.register-container button {
+   width: 250px;
+   padding: 10px;
+   background-color: #007BFF;
+   color: #fff;
+   border: none;
+   border-radius: 4px;
+   cursor: pointer;
+   font-size: 16px;
+}
+
+.register-container button:hover {
+   background-color: #0056b3;
+}
+
+.register-container span {
+   display: block;
+   margin-top: 10px;
+   font-size: 14px;
+}
+
+.register-container a {
+   color: #007BFF;
+   text-decoration: none;
+   font-size: 14px;
+}
+
+.register-container a:hover {
+   text-decoration: underline;
+}
+
+.register-container a:focus {
+   outline: none;
+   box-shadow: 0 0 2px 2px rgba(0, 123, 255, 0.5);
+}

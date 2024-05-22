@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../style/Users.css'; // Добавьте стили для вашей таблицы
-import Navigation from './Navigation';
+import Navigation from '../components/Navigation';
 
 const Users = () => {
    const [users, setUsers] = useState([]);

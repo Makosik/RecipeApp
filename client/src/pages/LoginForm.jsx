@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
+import '../style/LoginForm.css'
 
 import { login } from '../redux/authSlice';
 
@@ -29,25 +30,24 @@ function LoginForm() {
          console.log('Пользователь успешно аутентифицирован:', decodedToken);
       } catch (error) {
          console.error('Ошибка при аутентификации пользователя:', error.message);
+         alert('Неверный email или пароль')
       }
    };
 
    return (
-      <div>
-         <form onSubmit={handleSubmit}>
+      <div className="login-container">
+         <form onSubmit={handleSubmit} className="login-form">
             <h2>Вход</h2>
-            <div>
-               <label>Email:</label>
+            <div className='flex-form'>
+              <label>Email:</label>
                <input type="email" name="mail" value={formData.mail} onChange={handleChange} />
             </div>
-            <div>
+            <div className='flex-form'>
                <label>Пароль:</label>
                <input type="password" name="user_password" value={formData.user_password} onChange={handleChange} />
             </div>
             <button type="submit">Войти</button>
-            <br />
-            <span>Нет аккаунта?</span>
-            <Link to="/register">Зарегистрироваться</Link>
+            <span>Нет аккаунта? <Link to="/register">Зарегистрироваться</Link></span>
          </form>
       </div>
    );

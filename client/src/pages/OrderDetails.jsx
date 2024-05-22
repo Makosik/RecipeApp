@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Navigation from './Navigation';
-
+import Navigation from '../components/Navigation';
+import '../style/OrderDetails.css';
 
 function OrderDetails() {
    const { orderId } = useParams();
@@ -28,9 +28,6 @@ function OrderDetails() {
          console.error('Ошибка при загрузке деталей заказа:', error);
       }
    };
-   if (!orderDetails) {
-      return <div>Loading...</div>;
-   }
 
    const handleDeleteOrder = async () => {
       try {
@@ -75,42 +72,67 @@ function OrderDetails() {
       }
    };
 
-   const { order_id, user_id, created_at, dish_title, ingredients,ingredient_id, order_description, step_numbers, step_descriptions,coverphoto, file_path } = orderDetails;
+   const { order_id, user_id, created_at, dish_title, ingredients, ingredient_id, order_description, step_numbers, step_descriptions, coverphoto, file_path } = orderDetails;
    const baseUrl = 'http://localhost:3000';
 
-   
+
    return (
-      <div style={{backdropFilter: 'blur(1px)', paddingTop: '50px'}}>
-         <Navigation />
-         <h2>Детали заказа #{order_id}</h2>
-         <div>
-            <div>Заявка номер: {order_id}</div>
-            <div>user_id: {user_id}</div>
-            <div>Дата заявки: {created_at}</div>
-            <div>Название блюда: {dish_title}</div>
-            <img src={`${baseUrl}/${coverphoto}`} alt="Фото шага" width={300} height={200} />
-            <ul>
-               {ingredients.map((ingredient, index) => (
-                  <li key={index}>{ingredient}</li>
-               ))}
-            </ul>
-            <div>Описание: {order_description}</div>
-            <div>
+      <div className="order-details-container">
+         <div className="order-details-wrap">
+            <div className='order-details'>
+
+               <Navigation />
+               <h2 className="order-details-header">Детали заказа #{order_id}</h2>
+               <div className="order-info">
+                  <div>Заявка номер: {order_id}</div>
+                  <div>user_id: {user_id}</div>
+                  <div>Дата заявки: {created_at}</div>
+                  <div>Название блюда: {dish_title}</div>
+               </div>
+               <div className='flexWrap'>
+                  <img
+                     className="order-coverphoto"
+                     src={`${baseUrl}/${coverphoto}`}
+                     alt={dish_title}
+                  />
+
+                  <ul className="ingredient-list-order">
+                     <label> Ингредиенты:</label>
+                     {ingredients.map((ingredient, index) => (
+                        <li key={index}>{ingredient}</li>
+                     ))}
+                  </ul>
+               </div>
+            </div>
+            <div className="order-description">Описание: {order_description}</div>
+            <ul className="step-list">
                {step_numbers.map((stepNumber, index) => (
                   <li key={index}>
                      {`Шаг ${stepNumber}:`}
                      <br />
-                     <img src={`${baseUrl}/${file_path[index]}`} alt="Фото шага" width={300} height={200} />
-                     <div style={{ width: "300px", overflowWrap: "break-word" }}>{step_descriptions[index]}</div>
+                     <img
+                        className="step-image"
+                        src={`${baseUrl}/${file_path[index]}`}
+                        alt={`Шаг ${stepNumber}`}
+                     />
+                     <div className="step-description">
+                        {step_descriptions[index]}
+                     </div>
                   </li>
                ))}
+            </ul>
+            <div className="order-buttons">
+               <button className="order-button-del" onClick={handleDeleteOrder}>
+                  Удалить заявку
+               </button>
+               <button className="order-button" onClick={handleAddOrder}>
+                  Добавить заявку
+               </button>
             </div>
-            <br />
-            <button onClick={handleDeleteOrder}>Удалить заявку</button>
-            <button onClick={handleAddOrder}>Добавить заявку</button>
          </div>
       </div>
    );
+
 }
 
 export default OrderDetails;

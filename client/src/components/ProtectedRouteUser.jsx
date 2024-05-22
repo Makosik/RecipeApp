@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
+import '../style/ProtectedRouteUser.css'
 
 const ProtectedRouteUser = ({ children, isLoggedIn }) => {
    const navigate = useNavigate();
@@ -19,9 +20,9 @@ const ProtectedRouteUser = ({ children, isLoggedIn }) => {
 
    if (!isLoggedIn) {
       return (
-         <>
+         <div className='ProtectedWrap'>
             {showModal && <LoginModal onClose={handleCloseModal} />}
-         </>
+         </div>
       );
    }
 
