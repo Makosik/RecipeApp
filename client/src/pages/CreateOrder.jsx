@@ -89,14 +89,14 @@ function AddDishForm() {
          const newStep = {
             step_number: stepNumber,
             step_description: stepDescription,
-            tempPhoto: URL.createObjectURL(lastSelectedFile), // Создание URL для отображения изображения
+            tempPhoto: URL.createObjectURL(lastSelectedFile),
          };
          setSteps([...steps, newStep]);
          setStepNumber(stepNumber + 1);
          setStepDescription('');
 
-         setSelectedFiles([...selectedFiles, lastSelectedFile]); // Добавление последнего выбранного файла к общему списку файлов
-         setLastSelectedFile(null); // Сброс последнего выбранного файла
+         setSelectedFiles([...selectedFiles, lastSelectedFile]); 
+         setLastSelectedFile(null); 
       } else {
          alert('Нельзя добавить шаг без выбранной фотографии');
       }
@@ -141,7 +141,7 @@ function AddDishForm() {
          if (selectedIngredients.length > 0 && title.length > 0) {
             const uploadedFilePath = await handleUpload();
             console.log('uploadedFilesPaths:', uploadedFilePath);
-            const coverPhotoFile = uploadedFilePath.filter(filePath => filePath.includes('coverPhoto')).join(''); // Объединяем массив в строку
+            const coverPhotoFile = uploadedFilePath.filter(filePath => filePath.includes('coverPhoto')).join(''); 
             console.log('coverPhotoFile:', coverPhotoFile);
             const token = localStorage.getItem('token');
             const config = {

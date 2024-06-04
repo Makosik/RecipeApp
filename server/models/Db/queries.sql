@@ -89,6 +89,13 @@ SELECT * from favorites;
 
 INSERT INTO Ingredients (title)
 VALUES
+('Черный молотый перец');
+
+
+
+
+INSERT INTO Ingredients (title)
+VALUES
 ('Мясо говядины'),
 ('Мясо курицы'),
 ('Рыба'),

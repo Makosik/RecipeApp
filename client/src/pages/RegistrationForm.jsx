@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '.././redux/authSlice';
 import '../style/Registration.css';
+import Navigation from '../components/Navigation';
 
 function RegistrationForm() {
    const navigate = useNavigate();
@@ -36,7 +37,7 @@ function RegistrationForm() {
 
    return (
       <div className="register-container">
-
+         <Navigation />
          <form onSubmit={handleSubmit}>
             <h2>Регистрация</h2>
             <div className='flex-form'>

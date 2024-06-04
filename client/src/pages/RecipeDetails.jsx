@@ -170,7 +170,7 @@ const RecipeDetails = () => {
             {recipe.step_descriptions.map((step, index) => (
 
                <div className="step" key={index}>
-                  <div>Шаг {recipe.step_numbers[index]}:</div>
+                  <div className='stepnum'>Шаг {recipe.step_numbers[index]}:</div>
                   <div className="step-image">
                      <img src={`${baseUrl}/${recipe.file_path[index]}`} alt={`Шаг ${index + 1}`} />
                   </div>

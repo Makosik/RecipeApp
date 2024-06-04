@@ -13,11 +13,11 @@ class OrdersController {
          if (order) {
             res.json(order);
          } else {
-            res.status(404).json({ message: 'Order not found' });
+            res.status(404).json({ message: 'Заявка не найдена' });
          }
       } catch (error) {
-         console.error('Error fetching order:', error);
-         res.status(500).json({ message: 'Internal Server Error' });
+         console.error('Ошибка получения заказа:', error);
+         res.status(500).json({ message: 'Ошибка получения заказа.' });
       }
    }
 

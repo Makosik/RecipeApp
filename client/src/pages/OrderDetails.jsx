@@ -13,6 +13,7 @@ function OrderDetails() {
       fetchOrderDetails();
    }, [orderId]);
 
+
    const fetchOrderDetails = async () => {
       try {
          const token = localStorage.getItem('token');
@@ -23,7 +24,7 @@ function OrderDetails() {
          };
          const response = await axios.get(`/api/order/${orderId}`, config);
          setOrderDetails(response.data);
-         console.log(response.data)
+         // console.log(response.data)
       } catch (error) {
          console.error('Ошибка при загрузке деталей заказа:', error);
       }
@@ -72,6 +73,10 @@ function OrderDetails() {
       }
    };
 
+   if (!orderDetails) {
+      return <div>Загрузка...</div>;
+   }
+
    const { order_id, user_id, created_at, dish_title, ingredients, ingredient_id, order_description, step_numbers, step_descriptions, coverphoto, file_path } = orderDetails;
    const baseUrl = 'http://localhost:3000';
 
@@ -82,7 +87,7 @@ function OrderDetails() {
             <div className='order-details'>
 
                <Navigation />
-               <h2 className="order-details-header">Детали заказа #{order_id}</h2>
+               <h2 className="order-details-header">Детали заявки #{order_id}</h2>
                <div className="order-info">
                   <div>Заявка номер: {order_id}</div>
                   <div>user_id: {user_id}</div>
@@ -90,12 +95,14 @@ function OrderDetails() {
                   <div>Название блюда: {dish_title}</div>
                </div>
                <div className='flexWrap'>
-                  <img
+               <div>
+               <img
                      className="order-coverphoto"
                      src={`${baseUrl}/${coverphoto}`}
                      alt={dish_title}
                   />
-
+                  <div className="order-description">Описание: {order_description}</div>
+               </div>
                   <ul className="ingredient-list-order">
                      <label> Ингредиенты:</label>
                      {ingredients.map((ingredient, index) => (
@@ -104,12 +111,11 @@ function OrderDetails() {
                   </ul>
                </div>
             </div>
-            <div className="order-description">Описание: {order_description}</div>
+
             <ul className="step-list">
                {step_numbers.map((stepNumber, index) => (
                   <li key={index}>
-                     {`Шаг ${stepNumber}:`}
-                     <br />
+                     <div className='stepnum'>{`Шаг ${stepNumber}:`}</div>
                      <img
                         className="step-image"
                         src={`${baseUrl}/${file_path[index]}`}

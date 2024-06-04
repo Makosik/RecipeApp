@@ -7,6 +7,9 @@
    background-color: #fff;
 }
 
+.stepnum{
+   white-space:nowrap;
+}
 
 .order-details-header {
    font-size: 24px;

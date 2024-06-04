@@ -2,7 +2,8 @@
    margin-top: 30px;
    display: flex;
    flex-wrap: wrap;
-   gap: 50px;    
+   gap: 50px;  
+   
 }
 
 .recipe-card {
@@ -75,3 +76,21 @@
    padding: 50px;
 }
 
+@media (max-width: 520px) {
+  .recipe-card{
+   width: 350px;
+  }
+  .recipe-cards{
+   justify-content: center;
+  }
+  .suggestions-container{
+   width: 72%;
+  }
+ }
+
+ @media (max-width: 907px) {
+   .recipe-cards{
+    justify-content: center;
+   }
+  }
+ 

@@ -25,8 +25,7 @@ const LoginModal = ({ onClose }) => {
       <div className="modal" ref={modalRef}>
         <h2>Пожалуйста, войдите в систему, чтобы продолжить.</h2>
         <div>
-          <Link to="/login"><button>Авторизоваться</button></Link>
-          <Link to="/register"><button>Зарегистрироваться</button></Link>
+          <Link to="/login"><button className='add-button'>Авторизоваться</button></Link>
         </div>
         <button className="close-button" onClick={onClose}>X</button>
       </div>

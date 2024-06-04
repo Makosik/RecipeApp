@@ -8,23 +8,22 @@ import Navigation from '../components/Navigation';
 import LoginModal from '../components/LoginModal';
 import { useNavigate } from 'react-router-dom';
 import '../style/styles.css';
-import LoadingIndicator from '../components/LoadingIndicator';
+
 
 const DataComponent = () => {
    const dispatch = useDispatch();
    const dishes = useSelector(state => state.dishes.dishes);
    const [search, setSearch] = useState("");
    const [searchResult, setSearchResult] = useState([]);
+   const navigate = useNavigate();
+   const userId = useSelector(state => state.auth.userId);
+
+   const [showModal, setShowModal] = useState(false);
    const [selectedDish, setSelectedDish] = useState([]);
-   const [isblock, setIsblock] = useState(false);
    const [resultSearching, setResultSearching] = useState("");
-   const [isSearchActive, setIsSearchActive] = useState(false);
+
    const isAdmin = useSelector(state => state.auth.isAdmin);
    const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-   const [showModal, setShowModal] = useState();
-   const navigate = useNavigate();
-   const [blockForBtn, setblockForBtn] = useState(false);
-   const userId = useSelector(state => state.auth.userId);
 
    const fetchData = async () => {
       try {
@@ -54,58 +53,6 @@ const DataComponent = () => {
          setSelectedDish(filter)
       }
    }
-
-   const filterSearchDishes = () => {
-      if (search.length > 0) {
-         const filter = dishes.filter(dish => dish.dish_title.toLowerCase().includes(search.toLowerCase()));
-         setSearchResult(filter)
-      }
-   }
-
-   const handleAddSelectedSearch = (obj) => {
-      setResultSearching(obj.dish_title)
-      setIsblock(true)
-      setblockForBtn(true)
-      setSearchResult([obj]);
-      setSelectedDish([]);
-      setSearch('')
-   }
-
-   const handleKeyPress = (event) => {
-      if (event.key === 'Enter') {
-         event.target.blur();
-         setResultSearching(search)
-         setIsblock(true)
-         setblockForBtn(true)
-         setIsSearchActive(false);
-         filterSearchDishes();
-      }
-   };
-
-   const handleClickSearch = () => {
-      setResultSearching(search)
-      setIsblock(true)
-      setblockForBtn(true)
-      setIsSearchActive(false);
-      filterSearchDishes();
-   }
-
-   const handleReturnDishes = () => {
-      setSearchResult(dishes);
-      setIsblock(false)
-      setblockForBtn(false)
-   }
-
-   const handleFocus = () => {
-      setIsSearchActive(true);
-   };
-
-   const handleBlur = () => {
-      const timerId = setTimeout(() => {
-         setIsSearchActive(false);
-      }, 100);
-      setTimeout(timerId);
-   };
 
    const handleAddFavorite = async (dish_id) => {
       if (isLoggedIn) {
@@ -164,23 +111,14 @@ const DataComponent = () => {
                <Search
                   searchValue={search}
                   setSearchValue={setSearch}
-                  onKeyPress={handleKeyPress}
-                  setIsblock={setIsblock}
+                  setSearchResult={setSearchResult}
+                  resultSearching={resultSearching}
+                  setResultSearching={setResultSearching}
+                  selectedDish={selectedDish}
                   setSelectedDish={setSelectedDish}
-                  handleFocus={handleFocus}
-                  handleBlur={handleBlur}
+                  dishes={dishes}
                />
-               <div className='icon-background' onClick={() => handleClickSearch()}></div>
-               <p className="search-results" style={{ display: isblock ? 'block' : 'none' }}>Результаты поиска: {resultSearching}</p>
-               <div className="suggestions-container" style={{ display: isSearchActive ? 'block' : "none" }}>
-                  {selectedDish.map(item => (
-                     <div className="suggestion-item" onClick={() => handleAddSelectedSearch(item)} key={item.dish_id}>
-                        {item.dish_title}
-                     </div>
-                  ))}
-               </div>
             </div>
-            {blockForBtn && <button className="return-button" onClick={() => handleReturnDishes()}>Вернуться к рецептам</button>}
             <div className="recipe-cards">
                {searchResult.map(item => (
                   <div className="recipe-card" key={item.dish_id} onClick={() => handleCardClick(item.dish_id)}>

@@ -4,7 +4,6 @@ import Navigation from '../components/Navigation';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite } from '.././redux/favoriteSlice';
-import LoadingIndicator from '../components/LoadingIndicator';
 
 const Favorite = () => {
    const [favorites, setFavorites] = useState([]);

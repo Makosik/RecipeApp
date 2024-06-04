@@ -25,9 +25,8 @@ class FavoritesController {
    }
 
    async addFavorite(req, res) {
-      const { userId } = req.user; 
-     // console.log(userId)
-      const { dish_id } = req.body; 
+      const { userId } = req.user;
+      const { dish_id } = req.body;
       try {
          await addFavorite({ userId, dish_id })
          res.json({ success: true, message: 'Рецепт успешно добавлен в избранное' });

@@ -30,7 +30,6 @@ function ShowOrders() {
          dispatch(setOrders(result.data));
          const updateDishes = await axios.get('/api/dishes');
          dispatch(setDishes(updateDishes.data));
-         //console.log(`Its SHOW ${result.data}`)
       } catch (error) {
          console.error('Ошибка при получении заказов:', error.response.data.message);
       }
@@ -46,6 +45,7 @@ function ShowOrders() {
          };
          const response = await axios.delete(`/api/orders/${order_id}`, config);
          fetchData();
+         alert('Заявка успешно удалена!');
          console.log('Заявка успешно удалена:', response.data);
       } catch (error) {
          console.error('Ошибка при удалении заявки:', error);
@@ -75,7 +75,7 @@ function ShowOrders() {
          alert('Заявка успешно добавлена!');
       } catch (error) {
          console.error('Ошибка при добавлении заявки:', error)
-         alert('Заявка успешно добавлена!');
+         alert('Ошибка при добавлении заявки!');
       }
    };
 

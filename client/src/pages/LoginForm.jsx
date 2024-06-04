@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import '../style/LoginForm.css'
 
 import { login } from '../redux/authSlice';
+import Navigation from '../components/Navigation';
 
 function LoginForm() {
    const dispatch = useDispatch();
@@ -36,6 +37,7 @@ function LoginForm() {
 
    return (
       <div className="login-container">
+      <Navigation/>
          <form onSubmit={handleSubmit} className="login-form">
             <h2>Вход</h2>
             <div className='flex-form'>

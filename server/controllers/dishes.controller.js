@@ -1,14 +1,19 @@
-const {getDishes, getIngredients, deleteDish, createDish, getDishById} = require("../models/dishes")
+const { getDishes, getIngredients, deleteDish, createDish, getDishById } = require("../models/dishes")
 
 class DishesController {
 
    async getDishes(req, res) {
-      const dishes = await getDishes(req.body);
-      res.json(dishes.rows);
+      try {
+         const dishes = await getDishes(req.body);
+         res.json(dishes.rows);
+      } catch (error) {
+         console.error('Ошибка при получении рецептов:', error);
+         res.status(500).json({ message: 'Ошибка при получении рецептов' });
+      }
    }
 
    async getDishById(req, res) {
-      const {id} = req.params;
+      const { id } = req.params;
       try {
          const dish = await getDishById(id);
          if (dish) {
@@ -19,17 +24,22 @@ class DishesController {
       } catch (error) {
          console.error('Ошибка при получении деталей рецепта:', error);
          res.status(500).json({ message: 'Ошибка при получении деталей рецепта' });
-       }
+      }
    }
 
    async getIngredients(req, res) {
-      const ingredients = await getIngredients(req.body);
-      res.json(ingredients.rows);
+      try {
+         const ingredients = await getIngredients(req.body);
+         res.json(ingredients.rows);
+      } catch (error) {
+         console.error('Ошибка при получении ингредиентов:', error);
+         res.status(500).json({ message: 'Ошибка при получении ингредиентов' });
+      }
    }
 
    async deleteDish(req, res) {
       try {
-        await deleteDish(req.params);
+         await deleteDish(req.params);
          res.json({ success: true, message: 'Рецепт успешно удален' });
       } catch (error) {
          console.error('Ошибка при удалении рецепта:', error);
