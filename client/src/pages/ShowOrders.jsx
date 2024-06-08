@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOrders } from '.././redux/ordersSlice';
@@ -6,26 +6,38 @@ import { setDishes } from '.././redux/dishesSlice';
 import Navigation from '../components/Navigation';
 import { useNavigate } from 'react-router-dom';
 import '../style/CreateOrder.css';
+import {
+   getAccessToken,
+   isTokenExpired,
+   refreshAccessToken
+ } from '../utils/authUtils';
 
 function ShowOrders() {
    const dispatch = useDispatch();
    const userId = useSelector(state => state.auth.userId)
    const orders = useSelector(state => state.orders.orders);
    const navigate = useNavigate();
+   const [accessToken, setAccessTokenState] = useState(getAccessToken());
+
 
    useEffect(() => {
+      const fetchData = async () => {
+        if (accessToken && isTokenExpired(accessToken)) {
+          const newAccessToken = await refreshAccessToken();
+          setAccessTokenState(newAccessToken);
+        }
+        fetchDataOrders(accessToken || getAccessToken());
+      };
       fetchData();
-   }, []);
+    }, [accessToken]);
 
-   const fetchData = async () => {
+   const fetchDataOrders = async (currentToken) => {
       try {
-         const token = localStorage.getItem('token');
          const config = {
             headers: {
-               'Authorization': `Bearer ${token}`
+               'Authorization': `Bearer ${currentToken}`
             }
          };
-
          const result = await axios.get('/api/orders', config);
          dispatch(setOrders(result.data));
          const updateDishes = await axios.get('/api/dishes');
@@ -37,14 +49,14 @@ function ShowOrders() {
 
    const handleDeleteOrder = async (order_id) => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
          const config = {
             headers: {
                'Authorization': `Bearer ${token}`
             }
          };
          const response = await axios.delete(`/api/orders/${order_id}`, config);
-         fetchData();
+         fetchDataOrders();
          alert('Заявка успешно удалена!');
          console.log('Заявка успешно удалена:', response.data);
       } catch (error) {
@@ -54,7 +66,7 @@ function ShowOrders() {
 
    const handleAddOrder = async (dish_title, order_id, ingredient_id,) => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
 
          const config = {
             headers: {
@@ -70,7 +82,7 @@ function ShowOrders() {
          }, config);
 
          await handleDeleteOrder(order_id);
-         fetchData();
+         fetchDataOrders();
          console.log('Заявка успешно добавлена:', response.data);
          alert('Заявка успешно добавлена!');
       } catch (error) {

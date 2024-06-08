@@ -6,7 +6,11 @@ import '../style/RecipeDetails.css';
 import LoginModal from '../components/LoginModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite, setFavorites } from '.././redux/favoriteSlice';
-
+import {
+   getAccessToken,
+   isTokenExpired,
+   refreshAccessToken
+ } from '../utils/authUtils';
 
 const RecipeDetails = () => {
    const isAdmin = useSelector(state => state.auth.isAdmin);
@@ -20,49 +24,55 @@ const RecipeDetails = () => {
    const userId = useSelector(state => state.auth.userId);
    const isFavorite = useSelector(state => state.favorite[userId]?.[id]);
 
+   const [accessToken, setAccessTokenState] = useState(getAccessToken());
    console.log('isFavorite:', isFavorite)
    console.log('isUser:', userId)
 
-   useEffect(() => {
-      const fetchRecipeDetails = async () => {
-         try {
-            const token = localStorage.getItem('token');
-            const config = {
-               headers: {
-                  'Authorization': `Bearer ${token}`
-               }
-            };
-
-            const response = await axios.get(`/api/dishes/${id}`, config);
-            const data = response.data;
-            const steps = data.step_numbers.map((stepNumber, index) => ({
-               step_number: stepNumber,
-               step_description: data.step_descriptions[index],
-               file_path: `http://localhost:3000/${data.file_path[index]}`
-            }));
-
-            const recipeData = {
-               ...data,
-               steps
-            };
-            setRecipe(recipeData);
-            if (userId) {
-               const responseFavorite = await axios.get('/api/favorites', config);
-               const favArr = responseFavorite.data.rows.map(obj => obj.dish_id);
-               dispatch(setFavorites({ userId, favArr }));
+   const fetchRecipeDetails = async (currentToken) => {
+      try {
+         const config = {
+            headers: {
+               'Authorization': `Bearer ${currentToken}`
             }
-         } catch (error) {
-            console.error('Ошибка при загрузке деталей рецепта:', error);
+         };
+
+         const response = await axios.get(`/api/dishes/${id}`, config);
+         const data = response.data;
+         const steps = data.step_numbers.map((stepNumber, index) => ({
+            step_number: stepNumber,
+            step_description: data.step_descriptions[index],
+            file_path: `http://localhost:3000/${data.file_path[index]}`
+         }));
+
+         const recipeData = {
+            ...data,
+            steps
+         };
+         setRecipe(recipeData);
+         if (userId) {
+            const responseFavorite = await axios.get('/api/favorites', config);
+            const favArr = responseFavorite.data.rows.map(obj => obj.dish_id);
+            dispatch(setFavorites({ userId, favArr }));
          }
+      } catch (error) {
+         console.error('Ошибка при загрузке деталей рецепта:', error);
+      }
+   };
+
+   useEffect(() => {
+      const fetchData = async () => {
+        if (accessToken && isTokenExpired(accessToken)) {
+          const newAccessToken = await refreshAccessToken();
+          setAccessTokenState(newAccessToken);
+        }
+        fetchRecipeDetails(accessToken || getAccessToken());
       };
-      fetchRecipeDetails();
-   }, [id, dispatch, userId]);
-
-
+      fetchData();
+    }, [accessToken, id, dispatch, userId]);
 
    const handleDeleteDish = async (dish_id) => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
          const config = {
             headers: {
                'Authorization': `Bearer ${token}`
@@ -82,7 +92,7 @@ const RecipeDetails = () => {
       console.log(dish_id)
       if (isLoggedIn) {
          try {
-            const token = localStorage.getItem('token');
+            const token = getAccessToken();
             const config = {
                headers: {
                   'Authorization': `Bearer ${token}`
@@ -104,7 +114,7 @@ const RecipeDetails = () => {
 
    const handleDeleteFavorite = async (dish_id) => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
          const config = {
             headers: {
                'Authorization': `Bearer ${token}`

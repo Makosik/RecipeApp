@@ -24,8 +24,9 @@ function LoginForm() {
       e.preventDefault();
       try {
          const response = await axios.post('/api/auth/login', formData);
-         localStorage.setItem('token', response.data.token);
-         const decodedToken = jwtDecode(response.data.token);
+         localStorage.setItem('accessToken', response.data.accessToken);
+         localStorage.setItem('refreshToken', response.data.refreshToken);
+         const decodedToken = jwtDecode(response.data.accessToken);
          navigate('/recipes');
          dispatch(login(decodedToken));
          console.log('Пользователь успешно аутентифицирован:', decodedToken);

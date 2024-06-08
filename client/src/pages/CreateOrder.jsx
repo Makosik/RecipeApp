@@ -7,7 +7,9 @@ import TextField from '@mui/material/TextField';
 import CookingStep from "../components/CookingStep";
 import Navigation from '../components/Navigation';
 import '../style/CreateOrder.css';
-
+import {
+   getAccessToken
+ } from '../utils/authUtils';
 
 function AddDishForm() {
    const [title, setTitle] = useState('');
@@ -25,7 +27,6 @@ function AddDishForm() {
    const navigate = useNavigate();
    const [coverPhoto, setCoverPhoto] = useState(null);
 
-
    useEffect(() => {
       // Загрузка доступных ингредиентов из базы данных
       const fetchIngredients = async () => {
@@ -38,7 +39,6 @@ function AddDishForm() {
       };
       fetchIngredients();
    }, []);
-
 
    const handleDishInputChange = (e) => {
       setTitle(e.target.value);
@@ -143,7 +143,7 @@ function AddDishForm() {
             console.log('uploadedFilesPaths:', uploadedFilePath);
             const coverPhotoFile = uploadedFilePath.filter(filePath => filePath.includes('coverPhoto')).join(''); 
             console.log('coverPhotoFile:', coverPhotoFile);
-            const token = localStorage.getItem('token');
+            const token = getAccessToken();
             const config = {
                headers: {
                   'Authorization': `Bearer ${token}`

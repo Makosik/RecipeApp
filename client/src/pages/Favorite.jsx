@@ -4,6 +4,11 @@ import Navigation from '../components/Navigation';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite } from '.././redux/favoriteSlice';
+import {
+   getAccessToken,
+   isTokenExpired,
+   refreshAccessToken
+ } from '../utils/authUtils';
 
 const Favorite = () => {
    const [favorites, setFavorites] = useState([]);
@@ -12,25 +17,37 @@ const Favorite = () => {
    const dispatch = useDispatch();
    const userId = useSelector(state => state.auth.userId);
   
+   const [accessToken, setAccessTokenState] = useState(getAccessToken());
 
-   const fetchFavorites = async () => {
-      try {
-         const token = localStorage.getItem('token');
-         const config = {
-            headers: {
-               'Authorization': `Bearer ${token}`
-            }
-         };
-         const response = await axios.get('/api/favorites', config);
-         setFavorites(response.data.rows);
-      } catch (err) {
-         setError('Ошибка при получении избранных рецептов');
-      }
+   const fetchFavorites = async (currentToken) => {
+     try {
+       const config = {
+         headers: {
+           'Authorization': `Bearer ${currentToken}`
+         }
+       };
+       const response = await axios.get('/api/favorites', config);
+       setFavorites(response.data.rows);
+     } catch (err) {
+       setError('Ошибка при получении избранных рецептов');
+     }
    };
-
+ 
    useEffect(() => {
-      fetchFavorites();
-   }, []);
+      const fetchData = async () => {
+         try {
+            let currentToken = accessToken;
+            if (accessToken && isTokenExpired(accessToken)) {
+               currentToken = await refreshAccessToken();
+               setAccessTokenState(currentToken);
+            }
+            fetchFavorites(currentToken);
+         } catch (error) {
+            setError('Ошибка при обновлении токена доступа');
+         }
+      };
+      fetchData();
+   }, [accessToken]);
 
    const handleCardClick = (dish_id) => {
       navigate(`/dishes/${dish_id}`);
@@ -38,7 +55,7 @@ const Favorite = () => {
 
    const handleDeleteFavorite = async (dish_id) => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
          const config = {
             headers: {
                'Authorization': `Bearer ${token}`
@@ -46,7 +63,7 @@ const Favorite = () => {
          };
          await axios.delete(`/api/favorites/${dish_id}`, config);
          dispatch(toggleFavorite({ userId, dishId: dish_id }));
-         fetchFavorites();
+         fetchFavorites(token);
          alert('Рецепт успешно удален из избранного')
       } catch (error) {
          console.error('Ошибка при удалении рецепта из избранного:', error.response.data.message);
@@ -55,7 +72,7 @@ const Favorite = () => {
 
    if (error) return <p>{error}</p>;
 
-   console.log(favorites)
+ 
 
    return (
       <div className='wrapper '>

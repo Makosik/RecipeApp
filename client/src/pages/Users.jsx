@@ -2,20 +2,32 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../style/Users.css';
 import Navigation from '../components/Navigation';
+import {
+   getAccessToken,
+   isTokenExpired,
+   refreshAccessToken
+ } from '../utils/authUtils';
 
 const Users = () => {
    const [users, setUsers] = useState([]);
+   const [accessToken, setAccessTokenState] = useState(getAccessToken());
 
    useEffect(() => {
-      fetchUsers();
-   }, []);
+      const fetchData = async () => {
+        if (accessToken && isTokenExpired(accessToken)) {
+          const newAccessToken = await refreshAccessToken();
+          setAccessTokenState(newAccessToken);
+        }
+        fetchUsers(accessToken || getAccessToken());
+      };
+      fetchData();
+    }, [accessToken]);
 
-   const fetchUsers = async () => {
+   const fetchUsers = async (currentToken) => {
       try {
-         const token = localStorage.getItem('token');
          const config = {
             headers: {
-               'Authorization': `Bearer ${token}`
+               'Authorization': `Bearer ${currentToken}`
             }
          };
          const response = await axios.get('/api/users', config);
@@ -27,7 +39,7 @@ const Users = () => {
 
    const handleDeleteUser = async (userId) => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
          const config = {
             headers: {
                'Authorization': `Bearer ${token}`

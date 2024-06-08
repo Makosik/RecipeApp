@@ -3,23 +3,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navigation from '../components/Navigation';
 import '../style/OrderDetails.css';
+import {
+   getAccessToken,
+   isTokenExpired,
+   refreshAccessToken
+ } from '../utils/authUtils';
 
 function OrderDetails() {
    const { orderId } = useParams();
    const [orderDetails, setOrderDetails] = useState(null);
    const navigate = useNavigate();
+   const [accessToken, setAccessTokenState] = useState(getAccessToken());
 
-   useEffect(() => {
-      fetchOrderDetails();
-   }, [orderId]);
-
-
-   const fetchOrderDetails = async () => {
+   const fetchOrderDetails = async (currentToken) => {
       try {
-         const token = localStorage.getItem('token');
          const config = {
             headers: {
-               'Authorization': `Bearer ${token}`
+               'Authorization': `Bearer ${currentToken}`
             }
          };
          const response = await axios.get(`/api/order/${orderId}`, config);
@@ -30,9 +30,20 @@ function OrderDetails() {
       }
    };
 
+   useEffect(() => {
+      const fetchData = async () => {
+        if (accessToken && isTokenExpired(accessToken)) {
+          const newAccessToken = await refreshAccessToken();
+          setAccessTokenState(newAccessToken);
+        }
+        fetchOrderDetails(accessToken || getAccessToken());
+      };
+      fetchData();
+    }, [accessToken, orderId]);
+
    const handleDeleteOrder = async () => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
          const config = {
             headers: {
                'Authorization': `Bearer ${token}`
@@ -48,7 +59,7 @@ function OrderDetails() {
 
    const handleAddOrder = async () => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
 
          const config = {
             headers: {

@@ -1,4 +1,7 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const accessTokenSecret = process.env.ACCESS_TOKEN_PRIVATE_KEY;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_PRIVATE_KEY;
 
 const authMiddleware = (req, res, next) => {
    const authHeader = req.headers['authorization'];
@@ -6,28 +9,30 @@ const authMiddleware = (req, res, next) => {
    if (!token) {
       return res.status(401).json({ message: 'No token provided, authorization denied' });
    }
-
    try {
-      const decoded = jwt.verify(token, 'my-secret-key');
-      // const currentTime = Date.now() / 1000;
-
-      // if (decoded.exp - currentTime < 600) {
-      //    console.log('refresh token!')
-      //    const newToken = jwt.sign({
-      //       userId: decoded.userId,
-      //       userName: decoded.userName,
-      //       email: decoded.email,
-      //       isAdmin: decoded.isAdmin
-      //    }, 'my-secret-key', { expiresIn: '3h' });
-
-      //    res.setHeader('Authorization', `Bearer ${newToken}`);
-      //    return res.status(200).json({ token: newToken, message: 'Token refreshed' });
-      // }
-
+      const decoded = jwt.verify(token, accessTokenSecret);
       req.user = decoded;
       next();
    } catch (err) {
       return res.status(401).json({ message: 'Token is not valid' });
+   }
+};
+const refreshToken = (req, res) => {
+   const { token } = req.body;
+   if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+   }
+   try {
+      const decoded = jwt.verify(token, refreshTokenSecret);
+      const newAccessToken = jwt.sign({
+         userId: decoded.userId,
+         userName: decoded.userName,
+         email: decoded.email,
+         isAdmin: decoded.isAdmin
+      }, accessTokenSecret, { expiresIn: '1h' });
+      return res.status(200).json({ accessToken: newAccessToken });
+   } catch (err) {
+      return res.status(401).json({ message: 'Refresh token is not valid' });
    }
 };
 
@@ -39,4 +44,4 @@ const adminMiddleware = (req, res, next) => {
    }
 };
 
-module.exports = { authMiddleware, adminMiddleware };
+module.exports = { authMiddleware, refreshToken, adminMiddleware };

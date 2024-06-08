@@ -8,7 +8,9 @@ import Navigation from '../components/Navigation';
 import LoginModal from '../components/LoginModal';
 import { useNavigate } from 'react-router-dom';
 import '../style/styles.css';
-
+import {
+   getAccessToken,
+ } from '../utils/authUtils';
 
 const DataComponent = () => {
    const dispatch = useDispatch();
@@ -57,7 +59,7 @@ const DataComponent = () => {
    const handleAddFavorite = async (dish_id) => {
       if (isLoggedIn) {
          try {
-            const token = localStorage.getItem('token');
+            const token = getAccessToken();
             const config = {
                headers: {
                   'Authorization': `Bearer ${token}`
@@ -83,7 +85,7 @@ const DataComponent = () => {
 
    const handleDeleteDish = async (dish_id) => {
       try {
-         const token = localStorage.getItem('token');
+         const token = getAccessToken();
          const config = {
             headers: {
                'Authorization': `Bearer ${token}`

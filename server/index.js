@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const dishesRouter = require('./routes/dishes.route')
 const uploadRouter = require('./routes/upload.route')
@@ -5,7 +6,9 @@ const ordersRouter = require('./routes/orders.route')
 const favoriteRouter = require('./routes/favorites.route')
 const authRouter = require('./routes/auth.route');
 const usersRouter = require('./routes/users.route');
-const path = require('path')
+const path = require('path');
+
+
 const {createAdmin} = require('./models/auth')
 
 const app = express();

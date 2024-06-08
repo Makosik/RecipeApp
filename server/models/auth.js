@@ -1,6 +1,10 @@
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require("./db");
+const accessTokenSecret = process.env.ACCESS_TOKEN_PRIVATE_KEY;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_PRIVATE_KEY;
+
 
 async function register(userData) {
    const { user_name, mail, user_password } = userData;
@@ -18,19 +22,27 @@ async function register(userData) {
 }
 
 async function login(loginData) {
+
    const { mail, user_password } = loginData;
    const user = await db.query('SELECT * FROM users WHERE mail = $1', [mail]);
    if (user.rows.length === 0 || !await bcrypt.compare(user_password, user.rows[0].user_password)) {
       throw new Error('Authentication failed');
    }
-   const token = jwt.sign({ 
+   const accessToken = jwt.sign({ 
       userId: user.rows[0].id, 
       userName: user.rows[0].user_name,
       email: user.rows[0].mail,
-      isAdmin: user.rows[0].is_admin }, 
-      'my-secret-key', { expiresIn: '3h' });
+      isAdmin: user.rows[0].is_admin 
+  }, accessTokenSecret, { expiresIn: '1h' });
 
-   return { message: 'Authentication successful', token };
+  const refreshToken = jwt.sign({ 
+      userId: user.rows[0].id, 
+      userName: user.rows[0].user_name,
+      email: user.rows[0].mail,
+      isAdmin: user.rows[0].is_admin 
+  }, refreshTokenSecret, { expiresIn: '7d' });
+
+   return { message: 'Authentication successful', accessToken, refreshToken };
 }
 
 async function createAdmin() {

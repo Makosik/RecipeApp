@@ -19,7 +19,7 @@ function App() {
    const dispatch = useDispatch();
 
    useEffect(() => {
-      const authToken = localStorage.getItem('token');
+      const authToken = localStorage.getItem('accessToken');
       if (authToken) {
          const decodedToken = jwtDecode(authToken);
          dispatch(login(decodedToken));
